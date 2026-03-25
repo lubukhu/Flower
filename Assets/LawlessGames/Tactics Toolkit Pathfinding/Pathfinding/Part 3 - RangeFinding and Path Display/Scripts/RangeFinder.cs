@@ -23,9 +23,18 @@ namespace finished3
 
                 foreach (var item in tilesForPreviousStep)
                 {
-                    surroundingTiles.AddRange(MapManager.Instance.GetSurroundingTiles(new Vector2Int(item.gridLocation.x, item.gridLocation.y)));
-                }
+                    var neighbors = MapManager.Instance.GetSurroundingTiles(
+                        new Vector2Int(item.gridLocation.x, item.gridLocation.y)
+                    );
 
+                    foreach (var neighbor in neighbors)   // ✅ đổi tên
+                    {
+                        if (neighbor.unitOnTile != null)
+                            continue;
+
+                        surroundingTiles.Add(neighbor);
+                    }
+                }
                 inRangeTiles.AddRange(surroundingTiles);
                 tilesForPreviousStep = surroundingTiles.Distinct().ToList();
                 stepCount++;

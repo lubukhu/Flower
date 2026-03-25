@@ -15,7 +15,7 @@ namespace finished3
         public OverlayTile Previous;
         public Vector3Int gridLocation;
         public Vector2Int grid2DLocation {get { return new Vector2Int(gridLocation.x, gridLocation.y); } }
-
+        public CharacterInfo unitOnTile;
         public List<Sprite> arrows;
 
 

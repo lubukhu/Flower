@@ -43,7 +43,7 @@ namespace finished3
 
                 foreach (var tile in GetNeightbourOverlayTiles(currentOverlayTile))
                 {
-                    if (tile.isBlocked || closedList.Contains(tile) || Mathf.Abs(currentOverlayTile.transform.position.z - tile.transform.position.z) > 1)
+                    if (tile.isBlocked || tile.unitOnTile != null || closedList.Contains(tile))
                     {
                         continue;
                     }

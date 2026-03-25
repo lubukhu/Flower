@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using static finished3.ArrowTranslator;
@@ -13,6 +13,8 @@ namespace finished3
         public int movementRange = 3;
         private CharacterInfo character;
 
+        private bool isRangeVisible = true;
+        private CharacterStats playerStats;
         private PathFinder pathFinder;
         private RangeFinder rangeFinder;
         private ArrowTranslator arrowTranslator;
@@ -41,7 +43,7 @@ namespace finished3
                 cursor.transform.position = tile.transform.position;
                 cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder;
 
-                if (rangeFinderTiles.Contains(tile) && !isMoving)
+                if (isRangeVisible && rangeFinderTiles.Contains(tile) && !isMoving)
                 {
                     path = pathFinder.FindPath(character.standingOnTile, tile, rangeFinderTiles);
 
@@ -59,14 +61,48 @@ namespace finished3
                         path[i].SetSprite(arrow);
                     }
                 }
-
+                else
+                {
+                    ClearArrows();
+                }
                 if (Input.GetMouseButtonDown(0))
                 {
+                    // 🔥 CHẶN CLICK NGOÀI RANGE
+                    // CLICK Ô KHÔNG ĐI ĐƯỢC → TẮT RANGE
+                    if (character != null && !rangeFinderTiles.Contains(tile))
+                    {
+                        HideRange();
+                        isRangeVisible = false;
+                        return;
+                    }
+                    // CLICK LẠI CHÍNH PLAYER → BẬT LẠI RANGE
+                    if (character != null && tile == character.standingOnTile)
+                    {
+                        ShowRange();
+                        isRangeVisible = true;
+                        return;
+                    }
+                    if (character != null && tile.unitOnTile != null && tile.unitOnTile != character)
+                    {
+                        var enemyStats = tile.unitOnTile.GetComponent<CharacterStats>();
+
+                        float distance = Vector2.Distance(character.transform.position, tile.transform.position);
+
+                        if (distance <= playerStats.attackRange + 0.1f)
+                        {
+                            CombatManager.Instance.Attack(playerStats, enemyStats);
+                        }
+
+                        return;
+                    }
+
                     tile.ShowTile();
 
                     if (character == null)
                     {
                         character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
+                        playerStats = character.GetComponent<CharacterStats>();
+
                         PositionCharacterOnLine(tile);
                         GetInRangeTiles();
                     }
@@ -77,13 +113,45 @@ namespace finished3
                     }
                 }
             }
+            else
+            {
+                ClearArrows();
 
+                if (!isRangeVisible)
+                    return;
+            }
             if (path.Count > 0 && isMoving)
             {
                 MoveAlongPath();
             }
+            
+        }
+        void ClearArrows()
+        {
+            if (rangeFinderTiles == null) return;
+
+            foreach (var tile in rangeFinderTiles)
+            {
+                tile.SetSprite(ArrowDirection.None);
+            }
         }
 
+        void HideRange()
+        {
+            foreach (var item in rangeFinderTiles)
+            {
+                item.HideTile();
+                item.SetSprite(ArrowDirection.None);
+            }
+        }
+
+        void ShowRange()
+        {
+            foreach (var item in rangeFinderTiles)
+            {
+                item.ShowTile();
+            }
+        }
         private void MoveAlongPath()
         {
             var step = speed * Time.deltaTime;
