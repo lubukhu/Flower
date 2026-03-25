@@ -19,5 +19,6 @@ MonoBehaviour:
   redBlueShift: -0.279
   scanSize: 1.67
   vignette: 0.355
-  flicker: 1
   greyscale: 0.2
+  flicker: 1
+  tint: {r: 1, g: 0, b: 0, a: 0.2627451}

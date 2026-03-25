@@ -12,7 +12,7 @@ namespace finished3
         public GameObject characterPrefab;
         public int movementRange = 3;
         private CharacterInfo character;
-
+        private JumpMover jumpMover;
         private bool isRangeVisible = true;
         private CharacterStats playerStats;
         private PathFinder pathFinder;
@@ -21,6 +21,8 @@ namespace finished3
         private List<OverlayTile> path;
         private List<OverlayTile> rangeFinderTiles;
         private bool isMoving;
+
+        private List<OverlayTile> attackTiles = new List<OverlayTile>();
 
         private void Start()
         {
@@ -86,9 +88,7 @@ namespace finished3
                     {
                         var enemyStats = tile.unitOnTile.GetComponent<CharacterStats>();
 
-                        float distance = Vector2.Distance(character.transform.position, tile.transform.position);
-
-                        if (distance <= playerStats.attackRange + 0.1f)
+                        if (attackTiles.Contains(tile))
                         {
                             CombatManager.Instance.Attack(playerStats, enemyStats);
                         }
@@ -102,7 +102,7 @@ namespace finished3
                     {
                         character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
                         playerStats = character.GetComponent<CharacterStats>();
-
+                        jumpMover = character.GetComponent<JumpMover>();
                         PositionCharacterOnLine(tile);
                         GetInRangeTiles();
                     }
@@ -125,6 +125,50 @@ namespace finished3
                 MoveAlongPath();
             }
             
+        }
+        void GetAttackTiles()
+        {
+            attackTiles.Clear();
+
+            var pos = new Vector2Int(
+                character.standingOnTile.gridLocation.x,
+                character.standingOnTile.gridLocation.y
+            );
+
+            int range = playerStats.attackRange;
+
+            foreach (var kvp in MapManager.Instance.map)
+            {
+                var tile = kvp.Value;
+
+                int dx = Mathf.Abs(tile.gridLocation.x - pos.x);
+                int dy = Mathf.Abs(tile.gridLocation.y - pos.y);
+
+                int distance = Mathf.Max(dx, dy); // 🔥 cho phép chéo
+
+                if (distance > 0 && distance <= range)
+                {
+                    attackTiles.Add(tile);
+                }
+            }
+        }
+
+        void ShowAttackRange()
+        {
+            foreach (var tile in attackTiles)
+            {
+                if (tile.unitOnTile != null)
+                {
+                    tile.SetAttackColor();
+                }
+            }
+        }
+        void ResetAttackRange()
+        {
+            foreach (var tile in attackTiles)
+            {
+                tile.ShowTile(); // về trắng
+            }
         }
         void ClearArrows()
         {
@@ -154,24 +198,25 @@ namespace finished3
         }
         private void MoveAlongPath()
         {
-            var step = speed * Time.deltaTime;
-
-            float zIndex = path[0].transform.position.z;
-            character.transform.position = Vector2.MoveTowards(character.transform.position, path[0].transform.position, step);
-            character.transform.position = new Vector3(character.transform.position.x, character.transform.position.y, zIndex);
-
-            if (Vector2.Distance(character.transform.position, path[0].transform.position) < 0.00001f)
-            {
-                PositionCharacterOnLine(path[0]);
-                path.RemoveAt(0);
-            }
-
             if (path.Count == 0)
-            {
-                GetInRangeTiles();
-                isMoving = false;
-            }
+                return;
 
+            if (!jumpMover.IsJumping)
+            {
+                var targetTile = path[0];
+
+                jumpMover.StartJump(targetTile.transform.position, () =>
+                {
+                    PositionCharacterOnLine(targetTile);
+                    path.RemoveAt(0);
+
+                    if (path.Count == 0)
+                    {
+                        GetInRangeTiles();
+                        isMoving = false;
+                    }
+                });
+            }
         }
 
         private void PositionCharacterOnLine(OverlayTile tile)
@@ -198,12 +243,20 @@ namespace finished3
 
         private void GetInRangeTiles()
         {
-            rangeFinderTiles = rangeFinder.GetTilesInRange(new Vector2Int(character.standingOnTile.gridLocation.x, character.standingOnTile.gridLocation.y), movementRange);
+            rangeFinderTiles = rangeFinder.GetTilesInRange(
+                new Vector2Int(character.standingOnTile.gridLocation.x,
+                character.standingOnTile.gridLocation.y),
+                movementRange
+            );
 
             foreach (var item in rangeFinderTiles)
             {
                 item.ShowTile();
             }
+
+            // 🔥 THÊM
+            GetAttackTiles();
+            ShowAttackRange();
         }
     }
 }

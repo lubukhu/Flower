@@ -15,9 +15,10 @@ MonoBehaviour:
   intensity: 1
   dithering4: 0.333
   dithering8: 0.218
-  pixelation: 5
-  redBlueShift: -0.279
+  pixelation: 10
+  redBlueShift: -0.09
   scanSize: 1.67
   vignette: 0.355
-  flicker: 1
   greyscale: 0.2
+  flicker: 1
+  tint: {r: 1, g: 1, b: 1, a: 1}

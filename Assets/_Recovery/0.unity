@@ -3457,6 +3457,60 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1079232398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1079232400}
+  - component: {fileID: 1079232399}
+  m_Layer: 0
+  m_Name: DemoObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1079232399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1079232398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0880c5f962c348a69172b7587c7b7eb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  crtCamera: {fileID: 519420033}
+  demoValues:
+  - {fileID: 11400000, guid: cc1fa106315fc44d0a167ce7d166cb64, type: 2}
+  - {fileID: 11400000, guid: b3e940007e9ae4a91a4073b56fa291a1, type: 2}
+  - {fileID: 11400000, guid: f01c6cdd628ff47f0a2bd4e35c04197c, type: 2}
+  - {fileID: 11400000, guid: 6a4cfee667ae5420fbc0ff45d34bb1d5, type: 2}
+  - {fileID: 11400000, guid: 6adb959626b904caca730305a43e0053, type: 2}
+  - {fileID: 11400000, guid: 450a8e910a399432b98807bbfdd5d299, type: 2}
+  - {fileID: 11400000, guid: b47c144ea905e432bbce43fbef5b4644, type: 2}
+  currentDemoIndex: 0
+--- !u!4 &1079232400
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1079232398}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.9736576, y: -2.0164623, z: 16.391335}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1107901044
 GameObject:
   m_ObjectHideFlags: 0
@@ -7825,25 +7879,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HorrorAudioManager
   sounds:
   - clip: {fileID: 8300000, guid: 1c60bc4e8d20ff043950ef15a9142442, type: 3}
-    volumeRange: {x: 0, y: 0}
-    delayRange: {x: 0, y: 0}
+    volumeRange: {x: 0, y: 1}
+    delayRange: {x: 0.2, y: 0.5}
     glitchPresets:
     - {fileID: 11400000, guid: eea567953af9e9f4885430a5c10ac4fd, type: 2}
-    glitchDurationRange: {x: 0, y: 0}
+    glitchDurationRange: {x: 0.05, y: 0.5}
   - clip: {fileID: 8300000, guid: 2f0201b5c6dcda442b34161e6fa5cdfd, type: 3}
-    volumeRange: {x: 0, y: 0}
-    delayRange: {x: 0, y: 0}
+    volumeRange: {x: 0, y: 1}
+    delayRange: {x: 0.8, y: 1}
     glitchPresets:
     - {fileID: 11400000, guid: c03494b01f6edc84d875e8c1d1317506, type: 2}
-    glitchDurationRange: {x: 0.05, y: 0.3}
+    glitchDurationRange: {x: 0.05, y: 0.5}
   - clip: {fileID: 8300000, guid: dc38fd2460816e24ab8a879f2e85667c, type: 3}
-    volumeRange: {x: 0, y: 0}
-    delayRange: {x: 0, y: 0}
+    volumeRange: {x: 0, y: 1}
+    delayRange: {x: 0.3, y: 0.5}
     glitchPresets:
     - {fileID: 11400000, guid: b5c252009d3939c40b228eb7611be17e, type: 2}
-    glitchDurationRange: {x: 0.05, y: 0.3}
+    glitchDurationRange: {x: 0.05, y: 0.5}
   crtCamera: {fileID: 519420033}
-  globalDelayRange: {x: 1, y: 3}
+  globalDelayRange: {x: 3, y: 5}
   autoFindCamera: 1
 --- !u!4 &2088592784
 Transform:
@@ -8185,6 +8239,7 @@ SceneRoots:
   - {fileID: 661932176}
   - {fileID: 1870081899}
   - {fileID: 975311965}
+  - {fileID: 1079232400}
   - {fileID: 1108905819}
   - {fileID: 453240777}
   - {fileID: 2088592784}

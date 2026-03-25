@@ -48,6 +48,9 @@ namespace finished3
                 GetComponentsInChildren<SpriteRenderer>()[1].sortingOrder = gameObject.GetComponent<SpriteRenderer>().sortingOrder;
             }
         }
-
+        public void SetAttackColor()
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0.3f, 0.3f, 1); // đỏ
+        }
     }
 }
