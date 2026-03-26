@@ -39,5 +39,16 @@ namespace finished3
                 tile.SetSprite(ArrowTranslator.ArrowDirection.None);
             }
         }
+        public void ShowPath(List<OverlayTile> path, ArrowTranslator arrowTranslator, OverlayTile startTile)
+        {
+            for (int i = 0; i < path.Count; i++)
+            {
+                var previousTile = i > 0 ? path[i - 1] : startTile;
+                var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+
+                var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
+                path[i].SetSprite(arrow);
+            }
+        }
     }
 }

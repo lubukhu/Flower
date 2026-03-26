@@ -8,70 +8,116 @@ namespace finished3
     public class MouseController : MonoBehaviour
     {
         
+        // =====================
+        // 🔹 Inspector (Unity)
+        // =====================
         public GameObject cursor;
         public float speed;
         public GameObject characterPrefab;
         public int movementRange = 3;
+
+        // =====================
+        // 🔹 Core References
+        // =====================
         private CharacterInfo character;
-        private JumpMover jumpMover;
-        private bool isRangeVisible = true;
         private CharacterStats playerStats;
-        private RangeFinder rangeFinder;
-        private ArrowTranslator arrowTranslator;
-        private List<OverlayTile> rangeFinderTiles;
-        private bool isMoving;
-        private AttackController attackController;
-        private List<OverlayTile> attackTiles;
+        private JumpMover jumpMover;
+
+        // =====================
+        // 🔹 Systems
+        // =====================
         private MovementController movementController;
-        private List<OverlayTile> path = new List<OverlayTile>();
+        private AttackController attackController;
         private RangeSystem rangeSystem;
         private TileHighlighter tileHighlighter;
+        private ArrowTranslator arrowTranslator;
+
+        // =====================
+        // 🔹 Runtime State
+        // =====================
+        private bool isMoving;
+        private bool isRangeVisible = true;
+
+        // =====================
+        // 🔹 Data / Cache
+        // =====================
+        private List<OverlayTile> rangeFinderTiles;
+        private List<OverlayTile> attackTiles;
+        private List<OverlayTile> path = new List<OverlayTile>();
 
         private void Start()
         {
-            tileHighlighter = new TileHighlighter();
-            rangeSystem = new RangeSystem();
+            // =====================
+            // 🔹 Systems
+            // =====================
             movementController = new MovementController();
             attackController = new AttackController();
-            rangeFinder = new RangeFinder();
+            rangeSystem = new RangeSystem();
+
+            // =====================
+            // 🔹 Visual / Helpers
+            // =====================
+            tileHighlighter = new TileHighlighter();
             arrowTranslator = new ArrowTranslator();
 
-            path = new List<OverlayTile>();
+            // =====================
+            // 🔹 Runtime State
+            // =====================
             isMoving = false;
+
+            // =====================
+            // 🔹 Data / Cache
+            // =====================
+            path = new List<OverlayTile>();
             rangeFinderTiles = new List<OverlayTile>();
         }
 
         void LateUpdate()
         {
+            // =====================
+            // 🔹 1. Raycast
+            // =====================
             RaycastHit2D? hit = GetFocusedOnTile();
 
-            if (hit.HasValue)
+            // =====================
+            // 🔹 2. Không hit tile
+            // =====================
+            if (!hit.HasValue)
+            {
+                ClearArrows();
+
+                if (!isRangeVisible)
+                    return;
+            }
+            else
             {
                 OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>();
-                cursor.transform.position = tile.transform.position;
-                cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder;
 
+                // =====================
+                // 🔹 3. Cursor Visual
+                // =====================
+                cursor.transform.position = tile.transform.position;
+                cursor.GetComponent<SpriteRenderer>().sortingOrder =
+                    tile.GetComponent<SpriteRenderer>().sortingOrder;
+
+                // =====================
+                // 🔹 4. Path Preview
+                // =====================
                 if (isRangeVisible && rangeFinderTiles.Contains(tile) && !isMoving)
                 {
                     path = movementController.GetPath(character, tile, rangeFinderTiles);
-                    foreach (var item in rangeFinderTiles)
-                    {
-                        MapManager.Instance.map[item.grid2DLocation].SetSprite(ArrowDirection.None);
-                    }
 
-                    for (int i = 0; i < path.Count; i++)
-                    {
-                        var previousTile = i > 0 ? path[i - 1] : character.standingOnTile;
-                        var futureTile = i < path.Count - 1 ? path[i + 1] : null;
-
-                        var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
-                        path[i].SetSprite(arrow);
-                    }
+                    tileHighlighter.ClearArrows(rangeFinderTiles);
+                    tileHighlighter.ShowPath(path, arrowTranslator, character.standingOnTile);
                 }
                 else
                 {
                     ClearArrows();
                 }
+
+                // =====================
+                // 🔹 5. Input Handling
+                // =====================
                 if (Input.GetMouseButtonDown(0))
                 {
                     if (HandleAttack(tile)) return;
@@ -79,13 +125,10 @@ namespace finished3
                     if (HandleMovement(tile)) return;
                 }
             }
-            else
-            {
-                ClearArrows();
 
-                if (!isRangeVisible)
-                    return;
-            }
+            // =====================
+            // 🔹 6. Movement Execute
+            // =====================
             if (path.Count > 0 && isMoving)
             {
                 movementController.MoveAlongPath(
@@ -99,7 +142,6 @@ namespace finished3
                     }
                 );
             }
-            
         }
         bool HandleAttack(OverlayTile tile)
         {
@@ -170,27 +212,17 @@ namespace finished3
         {
             if (rangeFinderTiles == null) return;
 
-            foreach (var tile in rangeFinderTiles)
-            {
-                tileHighlighter.ClearArrows(rangeFinderTiles);
-            }
+            tileHighlighter.ClearArrows(rangeFinderTiles);
         }
 
         void HideRange()
         {
-            foreach (var item in rangeFinderTiles)
-            {
-                item.HideTile();
-                item.SetSprite(ArrowDirection.None);
-            }
+            tileHighlighter.ClearTiles(rangeFinderTiles);
         }
 
         void ShowRange()
         {
-            foreach (var item in rangeFinderTiles)
-            {
-                item.ShowTile();
-            }
+            tileHighlighter.ShowMoveRange(rangeFinderTiles);
         }
 
         private static RaycastHit2D? GetFocusedOnTile()

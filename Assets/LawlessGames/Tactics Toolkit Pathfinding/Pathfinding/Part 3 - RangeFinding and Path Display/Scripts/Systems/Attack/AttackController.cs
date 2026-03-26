@@ -49,11 +49,35 @@ namespace finished3
         {
             if (tile.unitOnTile == null) return false;
 
-            var target = tile.unitOnTile.GetComponent<CharacterStats>();
+            var targetInfo = tile.unitOnTile;
+            var targetStats = targetInfo.GetComponent<CharacterStats>();
 
-            if (target == null) return false;
+            if (targetStats == null) return false;
 
-            CombatManager.Instance.Attack(attacker, target);
+            var attackerGO = attacker.gameObject;
+
+            var attackMover = attackerGO.GetComponent<AttackMover>();
+            var hitEffect = targetInfo.GetComponent<HitEffect>();
+
+            // 🔥 nếu có animation thì dùng
+            if (attackMover != null)
+            {
+                attackMover.StartAttack(targetInfo.transform.position, () =>
+                {
+                    // 🔥 hiệu ứng trúng đòn
+                    hitEffect?.PlayHit();
+
+                    // 🔥 gây damage
+                    CombatManager.Instance.Attack(attacker, targetStats);
+                });
+            }
+            else
+            {
+                // fallback nếu không có animation
+                hitEffect?.PlayHit();
+                CombatManager.Instance.Attack(attacker, targetStats);
+            }
+
             return true;
         }
     }

@@ -11,7 +11,7 @@ namespace finished3
 
         void Start()
         {
-            Invoke(nameof(Spawn), 0.1f);
+            Spawn();
         }
 
         void Spawn()
@@ -28,17 +28,6 @@ namespace finished3
             var enemy = Instantiate(enemyPrefab);
 
             var characterInfo = enemy.GetComponent<CharacterInfo>();
-
-            enemy.transform.position = new Vector3(
-                tile.transform.position.x,
-                tile.transform.position.y + 0.0001f,
-                tile.transform.position.z
-            );
-
-            enemy.GetComponent<SpriteRenderer>().sortingOrder =
-                tile.GetComponent<SpriteRenderer>().sortingOrder;
-
-            // 🔥 LINK 2 CHIỀU
             characterInfo.SetPositionOnTile(tile);
             tile.unitOnTile = characterInfo;
         }
