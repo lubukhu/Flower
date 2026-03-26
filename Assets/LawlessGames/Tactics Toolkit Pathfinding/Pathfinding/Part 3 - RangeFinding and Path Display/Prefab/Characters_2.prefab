@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8080844714004779172}
   - component: {fileID: -2777387625146525467}
   - component: {fileID: 4167353531197984020}
-  - component: {fileID: -3436337226019383634}
   m_Layer: 0
   m_Name: Characters_2
   m_TagString: Enemy
@@ -125,17 +124,3 @@ MonoBehaviour:
   defense: 1
   moveRange: 3
   attackRange: 1
---- !u!114 &-3436337226019383634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2111897906042077629}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1bfcae2e6c95824cac178642c7c0148, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::finished3.HitEffect
-  shakeDuration: 2.69
-  shakeStrength: 2.33

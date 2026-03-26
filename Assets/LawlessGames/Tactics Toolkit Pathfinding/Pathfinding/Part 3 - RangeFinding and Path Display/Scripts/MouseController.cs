@@ -7,6 +7,7 @@ namespace finished3
 {
     public class MouseController : MonoBehaviour
     {
+        
         public GameObject cursor;
         public float speed;
         public GameObject characterPrefab;
@@ -15,18 +16,23 @@ namespace finished3
         private JumpMover jumpMover;
         private bool isRangeVisible = true;
         private CharacterStats playerStats;
-        private PathFinder pathFinder;
         private RangeFinder rangeFinder;
         private ArrowTranslator arrowTranslator;
-        private List<OverlayTile> path;
         private List<OverlayTile> rangeFinderTiles;
         private bool isMoving;
-
-        private List<OverlayTile> attackTiles = new List<OverlayTile>();
+        private AttackController attackController;
+        private List<OverlayTile> attackTiles;
+        private MovementController movementController;
+        private List<OverlayTile> path = new List<OverlayTile>();
+        private RangeSystem rangeSystem;
+        private TileHighlighter tileHighlighter;
 
         private void Start()
         {
-            pathFinder = new PathFinder();
+            tileHighlighter = new TileHighlighter();
+            rangeSystem = new RangeSystem();
+            movementController = new MovementController();
+            attackController = new AttackController();
             rangeFinder = new RangeFinder();
             arrowTranslator = new ArrowTranslator();
 
@@ -47,8 +53,7 @@ namespace finished3
 
                 if (isRangeVisible && rangeFinderTiles.Contains(tile) && !isMoving)
                 {
-                    path = pathFinder.FindPath(character.standingOnTile, tile, rangeFinderTiles);
-
+                    path = movementController.GetPath(character, tile, rangeFinderTiles);
                     foreach (var item in rangeFinderTiles)
                     {
                         MapManager.Instance.map[item.grid2DLocation].SetSprite(ArrowDirection.None);
@@ -69,48 +74,9 @@ namespace finished3
                 }
                 if (Input.GetMouseButtonDown(0))
                 {
-                    // 🔥 CHẶN CLICK NGOÀI RANGE
-                    // CLICK Ô KHÔNG ĐI ĐƯỢC → TẮT RANGE
-                    if (character != null && !rangeFinderTiles.Contains(tile))
-                    {
-                        HideRange();
-                        isRangeVisible = false;
-                        return;
-                    }
-                    // CLICK LẠI CHÍNH PLAYER → BẬT LẠI RANGE
-                    if (character != null && tile == character.standingOnTile)
-                    {
-                        ShowRange();
-                        isRangeVisible = true;
-                        return;
-                    }
-                    if (character != null && tile.unitOnTile != null && tile.unitOnTile != character)
-                    {
-                        var enemyStats = tile.unitOnTile.GetComponent<CharacterStats>();
-
-                        if (attackTiles.Contains(tile))
-                        {
-                            CombatManager.Instance.Attack(playerStats, enemyStats);
-                        }
-
-                        return;
-                    }
-
-                    tile.ShowTile();
-
-                    if (character == null)
-                    {
-                        character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
-                        playerStats = character.GetComponent<CharacterStats>();
-                        jumpMover = character.GetComponent<JumpMover>();
-                        PositionCharacterOnLine(tile);
-                        GetInRangeTiles();
-                    }
-                    else
-                    {
-                        isMoving = true;
-                        tile.gameObject.GetComponent<OverlayTile>().HideTile();
-                    }
+                    if (HandleAttack(tile)) return;
+                    if (HandleSpawn(tile)) return;
+                    if (HandleMovement(tile)) return;
                 }
             }
             else
@@ -122,53 +88,83 @@ namespace finished3
             }
             if (path.Count > 0 && isMoving)
             {
-                MoveAlongPath();
+                movementController.MoveAlongPath(
+                    character,
+                    jumpMover,
+                    path,
+                    () =>
+                    {
+                        GetInRangeTiles();
+                        isMoving = false;
+                    }
+                );
             }
             
         }
-        void GetAttackTiles()
+        bool HandleAttack(OverlayTile tile)
         {
-            attackTiles.Clear();
+            if (character == null) return false;
 
-            var pos = new Vector2Int(
-                character.standingOnTile.gridLocation.x,
-                character.standingOnTile.gridLocation.y
+            if (tile.unitOnTile != null && tile.unitOnTile != character)
+            {
+                if (attackTiles.Contains(tile))
+                {
+                    attackController.TryAttack(tile, playerStats);
+                }
+
+                return true; // 🔥 chặn các hành động khác
+            }
+
+            return false;
+        }
+        bool HandleMovement(OverlayTile tile)
+        {
+            if (character == null) return false;
+
+            if (!rangeFinderTiles.Contains(tile))
+            {
+                HideRange();
+                isRangeVisible = false;
+                return true;
+            }
+
+            if (tile == character.standingOnTile)
+            {
+                ShowRange();
+                isRangeVisible = true;
+                return true;
+            }
+
+            // bắt đầu di chuyển
+            isMoving = true;
+            tile.HideTile();
+
+            return true;
+        }
+        bool HandleSpawn(OverlayTile tile)
+        {
+            if (character != null) return false;
+
+            character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
+            playerStats = character.GetComponent<CharacterStats>();
+            jumpMover = character.GetComponent<JumpMover>();
+
+            // đặt vào tile (đoạn bạn vừa fix)
+            character.transform.position = new Vector3(
+                tile.transform.position.x,
+                tile.transform.position.y + 0.0001f,
+                tile.transform.position.z
             );
 
-            int range = playerStats.attackRange;
+            character.GetComponent<SpriteRenderer>().sortingOrder =
+                tile.GetComponent<SpriteRenderer>().sortingOrder;
 
-            foreach (var kvp in MapManager.Instance.map)
-            {
-                var tile = kvp.Value;
+            character.standingOnTile = tile;
+            tile.unitOnTile = character;
 
-                int dx = Mathf.Abs(tile.gridLocation.x - pos.x);
-                int dy = Mathf.Abs(tile.gridLocation.y - pos.y);
+            GetInRangeTiles();
 
-                int distance = Mathf.Max(dx, dy); // 🔥 cho phép chéo
-
-                if (distance > 0 && distance <= range)
-                {
-                    attackTiles.Add(tile);
-                }
-            }
-        }
-
-        void ShowAttackRange()
-        {
-            foreach (var tile in attackTiles)
-            {
-                if (tile.unitOnTile != null)
-                {
-                    tile.SetAttackColor();
-                }
-            }
-        }
-        void ResetAttackRange()
-        {
-            foreach (var tile in attackTiles)
-            {
-                tile.ShowTile(); // về trắng
-            }
+            return true;
         }
         void ClearArrows()
         {
@@ -176,7 +172,7 @@ namespace finished3
 
             foreach (var tile in rangeFinderTiles)
             {
-                tile.SetSprite(ArrowDirection.None);
+                tileHighlighter.ClearArrows(rangeFinderTiles);
             }
         }
 
@@ -196,35 +192,6 @@ namespace finished3
                 item.ShowTile();
             }
         }
-        private void MoveAlongPath()
-        {
-            if (path.Count == 0)
-                return;
-
-            if (!jumpMover.IsJumping)
-            {
-                var targetTile = path[0];
-
-                jumpMover.StartJump(targetTile.transform.position, () =>
-                {
-                    PositionCharacterOnLine(targetTile);
-                    path.RemoveAt(0);
-
-                    if (path.Count == 0)
-                    {
-                        GetInRangeTiles();
-                        isMoving = false;
-                    }
-                });
-            }
-        }
-
-        private void PositionCharacterOnLine(OverlayTile tile)
-        {
-            character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
-            character.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
-            character.standingOnTile = tile;
-        }
 
         private static RaycastHit2D? GetFocusedOnTile()
         {
@@ -243,20 +210,10 @@ namespace finished3
 
         private void GetInRangeTiles()
         {
-            rangeFinderTiles = rangeFinder.GetTilesInRange(
-                new Vector2Int(character.standingOnTile.gridLocation.x,
-                character.standingOnTile.gridLocation.y),
-                movementRange
-            );
-
-            foreach (var item in rangeFinderTiles)
-            {
-                item.ShowTile();
-            }
-
-            // 🔥 THÊM
-            GetAttackTiles();
-            ShowAttackRange();
+            rangeFinderTiles = rangeSystem.GetMoveRange(character, movementRange);
+            tileHighlighter.ShowMoveRange(rangeFinderTiles);
+            attackTiles = rangeSystem.GetAttackRange(character, playerStats.attackRange);
+            tileHighlighter.ShowAttackRange(attackTiles);
         }
     }
 }
