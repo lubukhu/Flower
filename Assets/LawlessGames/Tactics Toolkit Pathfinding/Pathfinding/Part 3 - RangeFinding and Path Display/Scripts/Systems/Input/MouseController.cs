@@ -89,8 +89,16 @@ namespace finished3
             {
                 ClearArrows();
 
-                if (!isRangeVisible)
-                    return;
+                if (Input.GetMouseButtonDown(0))
+                {
+                    HideRange();
+                    isRangeVisible = false;
+
+                    path.Clear();
+                    isMoving = false;
+                }
+
+                return; // ✅ chỉ return ở đây là OK
             }
             else
             {
@@ -175,7 +183,7 @@ namespace finished3
                     isRangeVisible = true;
                 }
 
-                return true; // 🔥 CHẶN toàn bộ move
+                return false;
             }
     
             if (!rangeFinderTiles.Contains(tile))
