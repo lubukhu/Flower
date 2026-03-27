@@ -167,7 +167,7 @@ namespace finished3
         bool HandleMovement(OverlayTile tile)
         {
             if (character == null) return false;
-
+    
             if (!rangeFinderTiles.Contains(tile))
             {
                 HideRange();
