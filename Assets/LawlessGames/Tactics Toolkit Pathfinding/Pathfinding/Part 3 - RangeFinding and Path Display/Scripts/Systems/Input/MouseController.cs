@@ -132,7 +132,7 @@ namespace finished3
             // =====================
             // 🔹 6. Movement Execute
             // =====================
-            if (path.Count > 0 && isMoving)
+            if (path.Count > 0 && isMoving && isRangeVisible)
             {
                 movementController.MoveAlongPath(
                 character,
@@ -166,12 +166,26 @@ namespace finished3
         }
         bool HandleMovement(OverlayTile tile)
         {
-            if (character == null) return false;
+            if (!isRangeVisible)
+            {
+                // chỉ cho phép bật lại range khi click vào chính mình
+                if (tile == character.standingOnTile)
+                {
+                    ShowRange();
+                    isRangeVisible = true;
+                }
+
+                return true; // 🔥 CHẶN toàn bộ move
+            }
     
             if (!rangeFinderTiles.Contains(tile))
             {
                 HideRange();
                 isRangeVisible = false;
+
+                path.Clear();
+                isMoving = false;
+
                 return true;
             }
 
