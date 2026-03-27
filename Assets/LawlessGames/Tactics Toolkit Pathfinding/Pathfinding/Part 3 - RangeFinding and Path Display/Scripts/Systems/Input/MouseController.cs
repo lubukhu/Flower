@@ -22,6 +22,7 @@ namespace finished3
         private CharacterInfo character;
         private CharacterStats playerStats;
         private JumpMover jumpMover;
+        private ClimbMover climbMover;
 
         // =====================
         // 🔹 Systems
@@ -31,6 +32,7 @@ namespace finished3
         private RangeSystem rangeSystem;
         private TileHighlighter tileHighlighter;
         private ArrowTranslator arrowTranslator;
+        private MovementSystem movementSystem;
 
         // =====================
         // 🔹 Runtime State
@@ -53,6 +55,7 @@ namespace finished3
             movementController = new MovementController();
             attackController = new AttackController();
             rangeSystem = new RangeSystem();
+            movementSystem = new MovementSystem();
 
             // =====================
             // 🔹 Visual / Helpers
@@ -132,15 +135,17 @@ namespace finished3
             if (path.Count > 0 && isMoving)
             {
                 movementController.MoveAlongPath(
-                    character,
-                    jumpMover,
-                    path,
-                    () =>
-                    {
-                        GetInRangeTiles();
-                        isMoving = false;
-                    }
-                );
+                character,
+                jumpMover,
+                climbMover,        
+                movementSystem,    
+                path,
+                () =>
+                {
+                    GetInRangeTiles();
+                    isMoving = false;
+                }
+            );
             }
         }
         bool HandleAttack(OverlayTile tile)
@@ -190,6 +195,7 @@ namespace finished3
             character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
             playerStats = character.GetComponent<CharacterStats>();
             jumpMover = character.GetComponent<JumpMover>();
+            climbMover = character.GetComponent<ClimbMover>();
 
             // đặt vào tile (đoạn bạn vừa fix)
             character.transform.position = new Vector3(

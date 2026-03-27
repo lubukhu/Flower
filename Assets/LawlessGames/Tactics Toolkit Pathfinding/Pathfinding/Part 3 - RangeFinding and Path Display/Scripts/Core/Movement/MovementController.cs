@@ -16,26 +16,53 @@ namespace finished3
         public void MoveAlongPath(
             CharacterInfo character,
             JumpMover jumpMover,
+            ClimbMover climbMover,
+            MovementSystem movementSystem,
             List<OverlayTile> path,
             System.Action onComplete)
         {
             if (path.Count == 0) return;
 
-            if (!jumpMover.IsJumping)
+            var currentTile = character.standingOnTile;
+            var targetTile = path[0];
+
+            var moveType = movementSystem.GetMovementType(currentTile, targetTile);
+
+            switch (moveType)
             {
-                var targetTile = path[0];
-
-                jumpMover.StartJump(targetTile.transform.position, () =>
-                {
-                    PositionCharacter(character, targetTile);
-                    path.RemoveAt(0);
-
-                    if (path.Count == 0)
+                case MovementType.Climb:
+                    if (!climbMover.IsClimbing)
                     {
-                        onComplete?.Invoke();
+                        climbMover.StartClimb(targetTile.transform.position, () =>
+                        {
+                            FinishStep(character, targetTile, path, onComplete);
+                        });
                     }
-                });
+                    break;
+
+                case MovementType.Jump:
+                case MovementType.Walk:
+                    if (!jumpMover.IsJumping)
+                    {
+                        jumpMover.StartJump(targetTile.transform.position, () =>
+                        {
+                            FinishStep(character, targetTile, path, onComplete);
+                        });
+                    }
+                    break;
             }
+        }
+        private void FinishStep(
+            CharacterInfo character,
+            OverlayTile tile,
+            List<OverlayTile> path,
+            System.Action onComplete)
+        {
+            PositionCharacter(character, tile);
+            path.RemoveAt(0);
+
+            if (path.Count == 0)
+                onComplete?.Invoke();
         }
 
         private void PositionCharacter(CharacterInfo character, OverlayTile tile)

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -8189216132890556822}
   - component: {fileID: 4747534776334316249}
   - component: {fileID: -4921364835668398824}
+  - component: {fileID: 4644154455863824867}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -169,5 +170,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::finished3.AttackMover
   attackDuration: 0.2
-  lungeDistance: 0.15
+  stopDistance: 0.2
   tiltAmount: 20
+--- !u!114 &4644154455863824867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6688883963585979011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e64b8f24cf4da04283a02425378f7dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::finished3.ClimbMover
+  climbDuration: 0.3
+  stepHeightAmount: 0.5
+  startDelayThreshold: 0.1

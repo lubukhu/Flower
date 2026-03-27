@@ -4,11 +4,13 @@ namespace finished3
 {
     public class AttackMover : MonoBehaviour
     {
-        public float attackDuration = 0.2f;
-        public float lungeDistance = 0.15f;
-        public float tiltAmount = 20f;
+        public float attackDuration = 0.25f;
+        public float stopDistance = 0.2f; // khoảng cách dừng trước enemy
+        public float tiltAmount = 25f;
 
         private bool isAttacking = false;
+        private bool hasHit = false;
+
         private float attackTime = 0f;
 
         private Vector3 startPos;
@@ -23,11 +25,14 @@ namespace finished3
             startPos = transform.position;
 
             Vector3 dir = (enemyPos - startPos).normalized;
-            targetPos = startPos + dir * lungeDistance;
+
+            // 🔥 lao tới gần enemy (không chồng lên)
+            targetPos = enemyPos - dir * stopDistance;
 
             attackTime = 0f;
             isAttacking = true;
             onComplete = onFinish;
+            hasHit = false;
         }
 
         private void Update()
@@ -45,13 +50,18 @@ namespace finished3
 
             float easedT = Mathf.SmoothStep(0f, 1f, t);
 
-            // 🔥 forward → backward (ping pong)
+            // 🔥 tiến → lùi (attack motion)
             float moveT = Mathf.Sin(easedT * Mathf.PI);
-
+            // 🔥 IMPACT FRAME (đỉnh của sin = lúc chạm)
+            if (!hasHit && moveT >= 0.95f)
+            {
+                hasHit = true;
+                onComplete?.Invoke(); // 🔥 gọi damage ở đây
+            }
             // position
             transform.position = Vector3.Lerp(startPos, targetPos, moveT);
 
-            // 🔥 tilt theo hướng
+            // 🔥 tilt theo hướng enemy
             float dx = targetPos.x - startPos.x;
             float direction = Mathf.Abs(dx) > 0.01f ? Mathf.Sign(dx) : 1f;
 
@@ -63,6 +73,7 @@ namespace finished3
             {
                 transform.position = startPos;
                 transform.rotation = Quaternion.Euler(0, 0, 0);
+
                 onComplete?.Invoke();
             }
         }

@@ -44,7 +44,11 @@ namespace finished3
                 }
             }
         }
-
+        public enum AttackType
+        {
+            Normal,
+            Heavy
+        }
         public bool TryAttack(OverlayTile tile, CharacterStats attacker)
         {
             if (tile.unitOnTile == null) return false;
@@ -59,21 +63,28 @@ namespace finished3
             var attackMover = attackerGO.GetComponent<AttackMover>();
             var hitEffect = targetInfo.GetComponent<HitEffect>();
 
-            // 🔥 nếu có animation thì dùng
+            // 🔥 QUAN TRỌNG: chặn spam
+            if (attackMover != null && attackMover.IsAttacking)
+                return false;
+
             if (attackMover != null)
             {
                 attackMover.StartAttack(targetInfo.transform.position, () =>
                 {
-                    // 🔥 hiệu ứng trúng đòn
-                    hitEffect?.PlayHit();
+                    if (targetInfo != null)
+                    {
+                        var hitEffect = targetInfo.GetComponent<HitEffect>();
+                        hitEffect?.PlayHit();
+                    }
 
-                    // 🔥 gây damage
-                    CombatManager.Instance.Attack(attacker, targetStats);
+                    if (targetStats != null)
+                    {
+                        CombatManager.Instance.Attack(attacker, targetStats);
+                    }
                 });
             }
             else
             {
-                // fallback nếu không có animation
                 hitEffect?.PlayHit();
                 CombatManager.Instance.Attack(attacker, targetStats);
             }
