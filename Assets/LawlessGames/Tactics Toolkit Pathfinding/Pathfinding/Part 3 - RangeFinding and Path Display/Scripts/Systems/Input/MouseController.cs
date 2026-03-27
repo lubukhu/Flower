@@ -165,6 +165,16 @@ namespace finished3
                 if (attackTiles.Contains(tile))
                 {
                     attackController.TryAttack(tile, playerStats);
+
+                    // 🔥 FIX BUG
+                    ClearArrows();        // xóa mũi tên
+                    HideRange();          // ẩn range
+                    isRangeVisible = false;
+
+                    path.Clear();         // xóa đường cũ
+                    isMoving = false;     // reset state
+
+                    return true;
                 }
 
                 return true; // 🔥 chặn các hành động khác
