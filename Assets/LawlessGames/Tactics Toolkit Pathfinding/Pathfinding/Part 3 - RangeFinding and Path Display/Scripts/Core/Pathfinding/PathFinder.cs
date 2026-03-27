@@ -48,6 +48,22 @@ namespace finished3
                         continue;
                     }
 
+                    // =========================
+                    // 🔥 HEIGHT CHECK (FIX BUG)
+                    // =========================
+                    float currentHeight = currentOverlayTile.gridLocation.z;
+                    float nextHeight = tile.gridLocation.z;
+
+                    float heightDiff = nextHeight - currentHeight;
+
+                    // ❌ không cho leo quá 1 bậc
+                    if (heightDiff > 1)
+                        continue;
+
+                    // ❌ không cho rơi quá sâu (optional)
+                    if (heightDiff < -1)
+                        continue;
+
                     tile.G = GetManhattenDistance(start, tile);
                     tile.H = GetManhattenDistance(end, tile);
 
