@@ -80,7 +80,7 @@ namespace finished3
             );
 
             character.GetComponent<SpriteRenderer>().sortingOrder =
-                tile.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                tile.GetComponent<SpriteRenderer>().sortingOrder;
 
             character.standingOnTile = tile;
             tile.unitOnTile = character;

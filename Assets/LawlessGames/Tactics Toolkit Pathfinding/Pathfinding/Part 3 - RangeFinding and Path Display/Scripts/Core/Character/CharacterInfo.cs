@@ -15,7 +15,7 @@ namespace finished3
             );
 
             GetComponent<SpriteRenderer>().sortingOrder =
-            tile.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                tile.GetComponent<SpriteRenderer>().sortingOrder;
 
             standingOnTile = tile;
         }
