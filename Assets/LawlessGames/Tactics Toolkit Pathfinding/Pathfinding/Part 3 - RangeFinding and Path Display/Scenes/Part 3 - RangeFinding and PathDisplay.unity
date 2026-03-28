@@ -7825,25 +7825,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HorrorAudioManager
   sounds:
   - clip: {fileID: 8300000, guid: 1c60bc4e8d20ff043950ef15a9142442, type: 3}
-    volumeRange: {x: 0.3, y: 0.8}
-    delayRange: {x: 3, y: 6}
+    volumeRange: {x: 0.1, y: 0.6}
+    delayRange: {x: 0.1, y: 0.3}
     glitchPresets:
     - {fileID: 11400000, guid: eea567953af9e9f4885430a5c10ac4fd, type: 2}
-    glitchDurationRange: {x: 0.05, y: 0.5}
+    glitchDurationRange: {x: 0.05, y: 0.1}
   - clip: {fileID: 8300000, guid: 2f0201b5c6dcda442b34161e6fa5cdfd, type: 3}
-    volumeRange: {x: 0.3, y: 0.8}
+    volumeRange: {x: 0.1, y: 0.5}
     delayRange: {x: 1, y: 3}
     glitchPresets:
     - {fileID: 11400000, guid: c03494b01f6edc84d875e8c1d1317506, type: 2}
-    glitchDurationRange: {x: 0.1, y: 0.3}
+    glitchDurationRange: {x: 0.05, y: 0.3}
   - clip: {fileID: 8300000, guid: dc38fd2460816e24ab8a879f2e85667c, type: 3}
-    volumeRange: {x: 0.3, y: 0.8}
-    delayRange: {x: 0.5, y: 1}
+    volumeRange: {x: 3, y: 4}
+    delayRange: {x: 1, y: 2}
     glitchPresets:
     - {fileID: 11400000, guid: b5c252009d3939c40b228eb7611be17e, type: 2}
-    glitchDurationRange: {x: 0.05, y: 0.3}
+    - {fileID: 11400000, guid: 77ba8d47b0dc22a44a15a231e63fa6f4, type: 2}
+    glitchDurationRange: {x: 1, y: 2}
   crtCamera: {fileID: 519420033}
-  globalDelayRange: {x: 1, y: 3}
+  globalDelayRange: {x: 3, y: 6}
   autoFindCamera: 1
 --- !u!4 &2088592784
 Transform:
