@@ -1,0 +1,46 @@
+﻿C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\Scenes
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\Settings
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\_Recovery
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\Scenes\CRT-Free
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\Scenes\CRT-Free\DemoScene
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\Settings\Scenes
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Audio
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\CRT-Free
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Hellmade
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\IMG
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Prefab
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Audio\bgm
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Audio\sound_radio
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\CRT-Free\CRTs
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\CRT-Free\Images
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\CRT-Free\Materials
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\CRT-Free\Scenes
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\CRT-Free\Scripts
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\CRT-Free\CRTs\v2
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\CRT-Free\Scripts\v2
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Hellmade\Eazy Sound Manager
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Hellmade\Eazy Sound Manager\Demo
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Hellmade\Eazy Sound Manager\Scripts
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Hellmade\Eazy Sound Manager\Demo\Scripts
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\IMG\Cursors
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\IMG\Tactics Toolkit Pathfinding
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\IMG\Tactics Toolkit Pathfinding\TIles
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Core
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Systems
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Visual
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Core\Character
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Core\Combat
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Core\Grid
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Core\Movement
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Core\Pathfinding
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Core\Spawning
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Systems\Attack
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Systems\Input
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Systems\Movement
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Systems\Range
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Systems\State
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Visual\Effects
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Visual\Movement
+C:\Users\GIGABYTE\Documents\GitHub\Flower\Assets\ThirdParty\Scripts\Visual\Tile

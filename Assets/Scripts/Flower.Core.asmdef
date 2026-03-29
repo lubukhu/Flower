@@ -1,0 +1,17 @@
+{
+    "name": "Flower.Core",
+    "rootNamespace": "finished3",
+    "references": [
+        "BrewedInk.CRT",
+        "Hellmade.Sound"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
