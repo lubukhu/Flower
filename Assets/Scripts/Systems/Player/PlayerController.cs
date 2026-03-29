@@ -198,8 +198,8 @@ namespace finished3
 
             character.transform.position = new Vector3(
                 tile.transform.position.x,
-                tile.transform.position.y + 0.0001f,
-                tile.transform.position.z
+                tile.transform.position.y - 0.0001f,
+                tile.transform.position.z + 0.96f
             );
 
             character.GetComponent<SpriteRenderer>().sortingOrder =

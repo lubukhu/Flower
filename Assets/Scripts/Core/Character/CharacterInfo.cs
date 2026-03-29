@@ -8,16 +8,17 @@ namespace finished3
 
         public void SetPositionOnTile(OverlayTile tile)
         {
+            // Chuyển dấu cực + qua - để lướt ảo giác Graphic Y-Sort. 
+            // -0.0001f sẽ ép tọa độ Screen chồm lên cao hơn mảnh lưới màu Đỏ Tươi 1 mm, giải quyết vụ "chìm đáy bể màu" triệt để
             transform.position = new Vector3(
                 tile.transform.position.x,
-                tile.transform.position.y + 0.0001f,
-                tile.transform.position.z
+                tile.transform.position.y - 0.0001f,
+                tile.transform.position.z + 0.96f // lỗi cứu cánh khi enemy nằm dưới tile
             );
 
-            // 🔧 BUG FIX: Buộc nhân vật phải có điểm vẽ đồ họa (SortingOrder) lớn hơn mảnh Đất
-            // Để lớp lưới màu Trắng (Move) và Đỏ (Attack) không bao giờ "nhuộm lấp" mất hình ảnh quái vật
+            // Bỏ đoạn "+ 1" ngớ ngẩn gây lỗi múa Tường hỏng không gian 3D.
             GetComponent<SpriteRenderer>().sortingOrder =
-                tile.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                tile.GetComponent<SpriteRenderer>().sortingOrder;
 
             standingOnTile = tile;
         }

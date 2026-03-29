@@ -23,11 +23,6 @@ namespace finished3
         {
             if (path.Count == 0) return;
 
-            // 🎵 [SFX] Tiếng bước chân
-            var stats = character.GetComponent<CharacterStats>();
-            if (stats != null && stats.characterData != null && stats.characterData.moveSound != null)
-                Hellmade.Sound.EazySoundManager.PlaySound(stats.characterData.moveSound);
-
             var currentTile = character.standingOnTile;
             var targetTile = path[0];
 
@@ -38,6 +33,11 @@ namespace finished3
                 case MovementType.Climb:
                     if (!climbMover.IsClimbing)
                     {
+                        // 🎵 [SFX] Tiếng bước chân (Chỉ phát 1 lần khi bắt đầu nhảy)
+                        var stats = character.GetComponent<CharacterStats>();
+                        if (stats != null && stats.characterData != null && stats.characterData.moveSound != null)
+                            Hellmade.Sound.EazySoundManager.PlaySound(stats.characterData.moveSound);
+
                         climbMover.StartClimb(targetTile.transform.position, () =>
                         {
                             FinishStep(character, targetTile, path, onComplete);
@@ -49,6 +49,11 @@ namespace finished3
                 case MovementType.Walk:
                     if (!jumpMover.IsJumping)
                     {
+                        // 🎵 [SFX] Tiếng bước chân (Chỉ phát 1 lần khi bắt đầu nhảy)
+                        var stats = character.GetComponent<CharacterStats>();
+                        if (stats != null && stats.characterData != null && stats.characterData.moveSound != null)
+                            Hellmade.Sound.EazySoundManager.PlaySound(stats.characterData.moveSound);
+
                         jumpMover.StartJump(targetTile.transform.position, () =>
                         {
                             FinishStep(character, targetTile, path, onComplete);
@@ -80,12 +85,13 @@ namespace finished3
 
             character.transform.position = new Vector3(
                 tile.transform.position.x,
-                tile.transform.position.y + 0.0001f,
-                tile.transform.position.z
+                tile.transform.position.y - 0.0001f, 
+                tile.transform.position.z + 0.96f 
             );
 
+            // Không bao giờ được +1 điểm SortingOrder, sẽ phá hỏng Ảo giác Không Gian Trùng của Lớp isometric Y-Axis
             character.GetComponent<SpriteRenderer>().sortingOrder =
-                tile.GetComponent<SpriteRenderer>().sortingOrder + 1; // 🔧 BUG FIX: Giữ nguyên luật đè Overlay sau khi dịch chuyển nhảy ô
+                tile.GetComponent<SpriteRenderer>().sortingOrder;
 
             character.standingOnTile = tile;
             tile.unitOnTile = character;

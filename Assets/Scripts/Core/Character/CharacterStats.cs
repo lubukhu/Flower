@@ -58,6 +58,24 @@ namespace finished3
         }
 
         /// <summary>
+        /// Điểm giao tiếp duy nhất (API) để bơm máu từ Bình Máu hoặc Kỹ Năng Bơm Máu.
+        /// Chặn Bơm máu ảo (máu đã đầy).
+        /// </summary>
+        public bool Heal(int amount)
+        {
+            if (currentHP <= 0 || currentHP >= maxHP || characterData == null) return false;
+
+            currentHP += amount;
+            if (currentHP > maxHP) currentHP = maxHP;
+
+            GameLogger.Log($"{gameObject.name} nốc bình/được Buff, hồi {amount} máu. Máu hiện tại: {currentHP}/{maxHP}");
+
+            // Kênh Event UI lắng nghe
+            OnHealthChanged?.Invoke(currentHP, maxHP);
+            return true;
+        }
+
+        /// <summary>
         /// Tiếp nhận trừ máu và phát sóng ra UI.
         /// </summary>
         public void TakeDamage(int damage)
