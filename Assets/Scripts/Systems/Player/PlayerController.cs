@@ -19,7 +19,7 @@ namespace finished3
         #endregion
 
         #region Core References
-        private CharacterInfo character;
+        public CharacterInfo character { get; private set; }
         private CharacterStats playerStats;
         private JumpMover jumpMover;
         private ClimbMover climbMover;
@@ -32,6 +32,7 @@ namespace finished3
         #region Internal State
         private bool isMoving;
         private bool isRangeVisible = true;
+        public bool IsPlayerSpawned => character != null;
         #endregion
 
         #region Systems
@@ -84,6 +85,12 @@ namespace finished3
                     {
                         GetInRangeTiles();
                         isMoving = false;
+                        
+                        // ✨ [CHAPTER 1 HOOK] Thông báo đã hoàn thành 1 bước đi
+                        if (Chapter1Controller.Instance != null)
+                        {
+                            Chapter1Controller.Instance.OnPlayerMove();
+                        }
                     }
                 );
             }
@@ -96,6 +103,9 @@ namespace finished3
         /// </summary>
         public void TapOnTile(OverlayTile tile)
         {
+            // ✨ [CHAPTER 1 HOOK] Kiểm tra xem ô gạch này có được phép Tap không (ví dụ: chỉ cho phép ô (2,2) ở đầu game)
+            if (Chapter1Controller.Instance != null && !Chapter1Controller.Instance.CanTapTile(tile)) return;
+
             if (HandleAttack(tile)) return;
             if (HandleSpawn(tile)) return;
             if (HandleMovement(tile)) return;
@@ -177,10 +187,30 @@ namespace finished3
 
             if (tile == character.standingOnTile)
             {
-                ShowRange();
-                isRangeVisible = true;
+                CancelAction();
                 return true;
             }
+
+            // ✨ [CHAPTER 1 HOOK] Kiểm tra khóa di chuyển của Bước 3
+            // Thay vì chặn ngay từ đầu, ta cho hiện Range nhưng rung lắc khi định đi
+            if (Chapter1Controller.Instance != null && Chapter1Controller.Instance.IsMovementLocked())
+            {
+                // 🎵 [SFX] Báo không đi được (Random + Pitch/Pan chuyên nghiệp)
+                var stats = character.GetComponent<CharacterStats>();
+                if (stats != null && stats.characterData != null)
+                    stats.characterData.PlayRandomCannotMove();
+
+                var hitEffect = character.GetComponent<HitEffect>();
+                if (hitEffect != null) hitEffect.PlayHit();
+                
+                // Ép hiện lại Range vì nếu không hệ thống Update trong OverlayTile sẽ tự ẩn mất
+                ShowRange();
+
+                GameLogger.Log("Chapter 1: Di chuyển bị chặn. Nhân vật rung lắc báo hiệu.");
+                return true;
+            }
+
+            path = movementController.GetPath(character, tile, rangeFinderTiles);
 
             isMoving = true;
             tile.HideTile();
@@ -208,7 +238,14 @@ namespace finished3
             character.standingOnTile = tile;
             tile.unitOnTile = character;
 
+            // ✨ [CHAPTER 1 HOOK] Thông báo đã Spawn TRƯỚC khi tính toán tầm di chuyển
+            if (Chapter1Controller.Instance != null)
+            {
+                Chapter1Controller.Instance.SetPlayerSpawned(true);
+            }
+
             GetInRangeTiles();
+
             return true;
         }
         #endregion

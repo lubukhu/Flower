@@ -87,9 +87,8 @@ namespace finished3
 
             GameLogger.Log($"{gameObject.name} ăn {finalDamage} sát thương. Máu tồn: {currentHP}/{maxHP}");
 
-            // 🎵 [SFX] Bị thương
-            if (characterData != null && characterData.hurtSound != null)
-                Hellmade.Sound.EazySoundManager.PlaySound(characterData.hurtSound);
+            // 🎵 [SFX] Bị thương (Random + Pitch/Pan)
+            if (characterData != null) characterData.PlayRandomHurt();
 
             // Kéo mỏ neo Thanh Máu UI (Observer Protocol)
             OnHealthChanged?.Invoke(currentHP, maxHP);
@@ -108,9 +107,8 @@ namespace finished3
         {
             GameLogger.Log($"{gameObject.name} đứt gánh - Tử Ngang.");
 
-            // 🎵 [SFX] Chết
-            if (characterData != null && characterData.deathSound != null)
-                Hellmade.Sound.EazySoundManager.PlaySound(characterData.deathSound);
+            // 🎵 [SFX] Chết (Random + Pitch/Pan)
+            if (characterData != null) characterData.PlayRandomDeath();
 
             // Triggers (System Lọt Đồ, Cộng Điểm EXP) sẽ rình rập ở kênh này
             OnDied?.Invoke();

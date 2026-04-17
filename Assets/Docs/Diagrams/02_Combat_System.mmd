@@ -1,0 +1,29 @@
+%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#2d2d2d', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#ffffff', 'lineColor': '#ffffff'}}}%%
+graph TD
+    %% Thành phần tham gia
+    subgraph Stats [Hệ Thống Chỉ Số]
+        CS[CharacterStats - Quản lý HP hiện tại]
+        CD[CharacterData - HP, Defense gốc]
+    end
+
+    subgraph Logic [Logic Giao Đấu]
+        CM[CombatManager - Điều phối sát thương]
+        AC[AttackController - Xử lý lệnh tấn công]
+    end
+
+    subgraph Visual [Hiệu Ứng & Âm Thanh]
+        HE[HitEffect - Hiệu ứng chớp đỏ/rung]
+        AM[AttackMover - Chuyển động tấn công]
+        ESM[EazySoundManager - Phát âm thanh Hurt/Death]
+    end
+
+    %% Luồng xử lý
+    AC -- "1. Kích hoạt tấn công" --> AM
+    AM -- "2. Báo va chạm" --> CM
+    CM -- "3. Lấy chỉ số Sát thương" --> CS
+    CS -- "4. Đọc Defense gốc" --> CD
+    CM -- "5. Gọi hàm trừ máu" --> CS
+    CS -- "6. Kích hoạt" --> HE
+    CS -- "7. Kích hoạt" --> ESM
+    CS -- "8. Gửi sự kiện OnDied" --> CM
+    CM -- "9. Báo tử cho Hệ thống" --> GameState

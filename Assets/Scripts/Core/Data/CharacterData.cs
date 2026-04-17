@@ -27,16 +27,18 @@ namespace finished3
         public int attackRange = 1;
 
         [Header("Audio Settings")]
-        [Tooltip("Âm thanh dậm chân khi di chuyển")]
-        public AudioClip moveSound;
-        
-        [Tooltip("Âm thanh vung vũ khí hoặc tung đòn tấn công")]
-        public AudioClip attackSound;
-        
-        [Tooltip("Âm thanh khi bị dính đòn (Kêu la)")]
-        public AudioClip hurtSound;
+        public AudioActionSettings moveAudio;
+        public AudioActionSettings attackAudio;
+        public AudioActionSettings hurtAudio;
+        public AudioActionSettings deathAudio;
+        public AudioActionSettings cannotMoveAudio; // Âm thanh cảnh báo khi bị chặn di chuyển
 
-        [Tooltip("Âm thanh khi tử vong đứt gánh")]
-        public AudioClip deathSound;
+        #region Helper functions to play sound
+        public void PlayRandomMove() => moveAudio.PlayRandom();
+        public void PlayRandomAttack() => attackAudio.PlayRandom();
+        public void PlayRandomHurt() => hurtAudio.PlayRandom();
+        public void PlayRandomDeath() => deathAudio.PlayRandom();
+        public void PlayRandomCannotMove() => cannotMoveAudio.PlayRandom();
+        #endregion
     }
 }

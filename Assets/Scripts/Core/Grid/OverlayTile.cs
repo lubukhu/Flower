@@ -19,21 +19,34 @@ namespace finished3
         public List<Sprite> arrows;
 
 
+
+        public bool isShowing = false;
+
+        // ✨ [PHỤC HỒI CODE CŨ] Trả lại hàm Update nguyên bản của hệ thống cũ.
+        // Tuy nhiên có thêm chốt chặn an toàn để không làm hỏng giao diện Hướng dẫn của Chapter 1.
         private void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
+                // Nếu đang ở Chapter 1 và người chơi chưa Spawn, không được tự ý ẩn gạch (Gạch đang nháy)
+                if (PlayerController.Instance != null && !PlayerController.Instance.IsPlayerSpawned)
+                {
+                    return; 
+                }
+
                 HideTile();
             }
         }
 
         public void HideTile()
         {
+            isShowing = false;
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
         }
 
         public void ShowTile()
         {
+            isShowing = true;
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
         }
 

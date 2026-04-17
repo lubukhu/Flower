@@ -78,7 +78,7 @@ namespace finished3
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
 
-            int hitCount = Physics2D.RaycastNonAlloc(mousePos2D, Vector2.zero, _hitsBuffer);
+            int hitCount = Physics2D.Raycast(mousePos2D, Vector2.zero, new ContactFilter2D(), _hitsBuffer);
 
             if (hitCount > 0)
             {

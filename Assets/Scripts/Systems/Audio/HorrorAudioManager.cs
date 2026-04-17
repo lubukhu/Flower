@@ -45,7 +45,7 @@ public class HorrorAudioManager : MonoBehaviour
     {
         if (autoFindCamera)
         {
-            crtCamera = FindObjectOfType<CRTCameraBehaviour>();
+            crtCamera = Object.FindFirstObjectByType<CRTCameraBehaviour>();
         }
     }
 
@@ -55,7 +55,7 @@ public class HorrorAudioManager : MonoBehaviour
 
         if (crtCamera == null || crtCamera.Equals(null))
         {
-            crtCamera = FindObjectOfType<CRTCameraBehaviour>();
+            crtCamera = Object.FindFirstObjectByType<CRTCameraBehaviour>();
         }
     }
 

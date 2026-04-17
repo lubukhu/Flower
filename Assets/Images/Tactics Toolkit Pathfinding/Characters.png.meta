@@ -151,9 +151,9 @@ TextureImporter:
       name: Characters_1
       rect:
         serializedVersion: 2
-        x: 40
+        x: 42
         y: 0
-        width: 22
+        width: 12
         height: 16
       alignment: 9
       pivot: {x: 0.38, y: 0}

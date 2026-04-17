@@ -15,5 +15,67 @@ MonoBehaviour:
   maxHP: 10
   attack: 3
   defense: 1
-  moveRange: 3
+  moveRange: 1
   attackRange: 1
+  moveAudio:
+    audioVariants:
+    - clip: {fileID: 8300000, guid: 473e85d0bb4c672478883677f6825871, type: 3}
+      volume: 2
+      pitch: 0.1
+      stereoPan: -1
+    - clip: {fileID: 8300000, guid: 473e85d0bb4c672478883677f6825871, type: 3}
+      volume: 2
+      pitch: 0.1
+      stereoPan: 1
+    - clip: {fileID: 8300000, guid: 8dcf35873b7e5184c8446782319e274b, type: 3}
+      volume: 2
+      pitch: 0.1
+      stereoPan: -1
+    - clip: {fileID: 8300000, guid: 8dcf35873b7e5184c8446782319e274b, type: 3}
+      volume: 2
+      pitch: 0.1
+      stereoPan: 1
+    - clip: {fileID: 8300000, guid: a56072aa39cd38e4394a6ddfbc288994, type: 3}
+      volume: 2
+      pitch: 0.1
+      stereoPan: -1
+    - clip: {fileID: 8300000, guid: a56072aa39cd38e4394a6ddfbc288994, type: 3}
+      volume: 2
+      pitch: 0.1
+      stereoPan: 1
+  attackAudio:
+    audioVariants: []
+  hurtAudio:
+    audioVariants:
+    - clip: {fileID: 8300000, guid: e51ab21fcbf7b58459decc1e72011bdf, type: 3}
+      volume: 2
+      pitch: 0.1
+      stereoPan: -1
+    - clip: {fileID: 8300000, guid: 6b8299bdc9efe9b49af9f900259daf40, type: 3}
+      volume: 2
+      pitch: 0.1
+      stereoPan: 1
+    - clip: {fileID: 8300000, guid: 99f9f63ac51189146bffe731ef4ba90f, type: 3}
+      volume: 2
+      pitch: 0.1
+      stereoPan: 0
+  deathAudio:
+    audioVariants: []
+  cannotMoveAudio:
+    audioVariants:
+    - clip: {fileID: 8300000, guid: dad6b2e60fb35f8408e6345ec294ecbd, type: 3}
+      volume: 0
+      pitch: 3
+      stereoPan: -1
+    - clip: {fileID: 8300000, guid: dad6b2e60fb35f8408e6345ec294ecbd, type: 3}
+      volume: 0
+      pitch: 2.5
+      stereoPan: 1
+    - clip: {fileID: 8300000, guid: dad6b2e60fb35f8408e6345ec294ecbd, type: 3}
+      volume: 0
+      pitch: 2
+      stereoPan: -1
+    - clip: {fileID: 8300000, guid: dad6b2e60fb35f8408e6345ec294ecbd, type: 3}
+      volume: 0
+      pitch: 1.5
+      stereoPan: 1

@@ -62,8 +62,8 @@ namespace finished3
             if (tile.unitOnTile == null) return false;
 
             // 🎵 [SFX] Tiếng chém/đâm của người tấn công (Văng ra ngay lập tức bù đắp nhịp trễ Animation)
-            if (attacker.characterData != null && attacker.characterData.attackSound != null)
-                Hellmade.Sound.EazySoundManager.PlaySound(attacker.characterData.attackSound);
+            // 🎵 [SFX] Tấn công (Random + Pitch/Pan)
+            if (attacker.characterData != null) attacker.characterData.PlayRandomAttack();
 
             var targetInfo = tile.unitOnTile;
             var targetStats = targetInfo.GetComponent<CharacterStats>();

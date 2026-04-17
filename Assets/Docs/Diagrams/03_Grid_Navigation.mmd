@@ -1,0 +1,30 @@
+%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#2d2d2d', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#ffffff', 'lineColor': '#ffffff'}}}%%
+graph TD
+    %% Thành phần bản đồ
+    subgraph Grid [Hệ Thống Lưới]
+        MM[MapManager - Quản lý Dictionary các ô gạch]
+        OT[OverlayTile - Lưu GridLocation & isBlocked]
+    end
+
+    %% Thành phần toán học
+    subgraph Calculators [Hệ Thống Tính Toán]
+        PF[PathFinder - Thuật toán A* tìm đường đi]
+        RF[RangeFinder - Tìm các ô trong tầm di chuyển]
+    end
+
+    %% Thành phần thực thi
+    subgraph Execution [Hệ Thống Thực Thi]
+        MC[MovementController - Trượt nhân vật theo danh sách ô]
+        RS[RangeSystem - Vẽ vùng màu cho phép đi]
+    end
+
+    %% Luồng xử lý
+    MM -- "1. Cung cấp dữ liệu ô" --> RF
+    RF -- "2. Tìm vùng đi (BFS/Dijkstra)" --> RS
+    RS -- "3. Highlight ô cho phép" --> OT
+    
+    PC[PlayerController] -- "4. Chọn ô đích" --> PF
+    PF -- "5. Lấy Map từ" --> MM
+    PF -- "6. Trả về danh sách Queue Ô gạch" --> MC
+    MC -- "7. Di chuyển CharacterInfo" --> CI[CharacterInfo]
+    MC -- "8. Cập nhật Y-Sort / Position" --> CI

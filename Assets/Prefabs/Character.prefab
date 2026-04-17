@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4747534776334316249}
   - component: {fileID: -4921364835668398824}
   - component: {fileID: 4644154455863824867}
+  - component: {fileID: -8125633775662889735}
   m_Layer: 0
   m_Name: Character
   m_TagString: Player
@@ -183,3 +184,19 @@ MonoBehaviour:
   climbDuration: 0.3
   stepHeightAmount: 0.5
   startDelayThreshold: 0.1
+--- !u!114 &-8125633775662889735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6688883963585979011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3ee9da0ebb20e34cb82e834b5471e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Flower.Core::finished3.HitEffect
+  shakeDuration: 0.15
+  shakeAmount: 0.05
+  squashAmount: 0.1
+  flashColor: {r: 1, g: 1, b: 1, a: 1}

@@ -1,0 +1,31 @@
+%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#2d2d2d', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#ffffff', 'lineColor': '#ffffff'}}}%%
+graph TD
+    %% Thành phần dữ liệu
+    subgraph Items [Dữ Liệu Vật Phẩm]
+        ID[ItemData - Thông tin cơ bản]
+        CD[ConsumableData - Logic hồi máu/buff]
+    end
+
+    %% Thành phần quản lý
+    subgraph MGMT [Hệ Thống Quản Lý]
+        IM[InventoryManager - Singleton điều phối túi]
+        IS[InventorySlot - Cấu trúc 1 ô chứa đồ]
+    end
+
+    %% Thành phần giao diện
+    subgraph UI [Hệ Thống Giao Diện]
+        IUI[InventoryUI - Hiển thị danh sách ô]
+        IUS[InventoryUISlot - Xử lý Click/Hover UI]
+    end
+
+    %% Luồng xử lý
+    IM -- "Quản lý tập hợp ô" --> IS
+    IS -- "Chứa tham chiếu" --- ID
+    
+    IM -- "1. Báo thay đổi OnInventoryChanged" --> IUI
+    IUI -- "2. Cập nhật Sprite/Amount" --> IUS
+    
+    IUS -- "3. Gọi hàm Consume" --> IM
+    IM -- "4. Kiểm tra ConsumableData" --> CD
+    CD -- "5. Tác động trực tiếp" --> CS[CharacterStats - Cộng HP]
+    IM -- "6. Giảm số lượng Slot" --> IS

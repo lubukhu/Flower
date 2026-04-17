@@ -35,8 +35,8 @@ namespace finished3
                     {
                         // 🎵 [SFX] Tiếng bước chân (Chỉ phát 1 lần khi bắt đầu nhảy)
                         var stats = character.GetComponent<CharacterStats>();
-                        if (stats != null && stats.characterData != null && stats.characterData.moveSound != null)
-                            Hellmade.Sound.EazySoundManager.PlaySound(stats.characterData.moveSound);
+                        // 🎵 [SFX] Bước chân (Random + Pitch/Pan)
+                        if (stats != null && stats.characterData != null) stats.characterData.PlayRandomMove();
 
                         climbMover.StartClimb(targetTile.transform.position, () =>
                         {
@@ -51,8 +51,8 @@ namespace finished3
                     {
                         // 🎵 [SFX] Tiếng bước chân (Chỉ phát 1 lần khi bắt đầu nhảy)
                         var stats = character.GetComponent<CharacterStats>();
-                        if (stats != null && stats.characterData != null && stats.characterData.moveSound != null)
-                            Hellmade.Sound.EazySoundManager.PlaySound(stats.characterData.moveSound);
+                        // 🎵 [SFX] Bước chân (Random + Pitch/Pan)
+                        if (stats != null && stats.characterData != null) stats.characterData.PlayRandomMove();
 
                         jumpMover.StartJump(targetTile.transform.position, () =>
                         {

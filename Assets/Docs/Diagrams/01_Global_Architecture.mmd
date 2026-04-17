@@ -1,0 +1,38 @@
+%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#2d2d2d', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#ffffff', 'lineColor': '#ffffff'}}}%%
+graph TD
+    %% Tầng Dữ Liệu Tĩnh (Dạng ScriptableObject)
+    subgraph SO [Layer Dữ Liệu Tĩnh - Chỉ đọc]
+        CD[CharacterData - HP, Dmg, SFX Gốc]
+        ID[ItemData - ID, Name, Icon]
+        SD[HorrorSoundData - Dữ liệu âm thanh]
+    end
+
+    %% Tầng Điều Phối (Controllers)
+    subgraph Brain [Layer Điều Phối Chính]
+        GC[GameController - Trạng thái chương]
+        MC[MouseController - Nhận lệnh Chuột]
+        PC[PlayerController - Quản lý nhân vật chính]
+    end
+
+    %% Tầng Hệ Thống Logic
+    subgraph Systems [Layer Hệ Thống Chuyên Biệt]
+        CS[CharacterStats - Xử lý Sống/Chết]
+        IM[InventoryManager - Quản lý Túi đồ]
+        Mtrl[MovementController - Xử lý Di chuyển]
+    end
+
+    %% Tầng Không Gian
+    subgraph World [Layer Bản Đồ]
+        MM[MapManager - Quản lý toàn bộ Ô gạch]
+        OT[OverlayTile - Trạng thái từng ô đơn lẻ]
+    end
+
+    %% Liên kết luồng
+    MC -- "1. Click/Hover" --> OT
+    MC -- "2. Báo tọa độ" --> PC
+    PC -- "3. Yêu cầu di chuyển" --> Mtrl
+    Mtrl -- "4. Kiểm tra đường đi" --> MM
+    CD -- "Cấp thông số" --> CS
+    CS -- "Báo tử" --> GC
+    IM -- "Lấy dữ liệu" --- ID
+    SD -- "Phát âm thanh" --- GC
