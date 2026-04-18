@@ -45,5 +45,8 @@ TagManager:
   - name: JumpScare
     uniqueID: 2899137555
     locked: 0
+  - name: Logo
+    uniqueID: 1058425235
+    locked: 0
   m_RenderingLayers:
   - Default

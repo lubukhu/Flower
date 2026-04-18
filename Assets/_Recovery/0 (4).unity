@@ -2190,7 +2190,7 @@ MonoBehaviour:
   - clips:
     - clip: {fileID: 8300000, guid: 91cb5cd69e077af42b5122d980ce220d, type: 3}
       volume: 5
-      pitch: 1
+      pitch: 0.1
       stereoPan: 0
     waitTime: 2
     pulseSpeed: 5
@@ -2199,7 +2199,7 @@ MonoBehaviour:
   - clips:
     - clip: {fileID: 8300000, guid: d45978b69d3867448acfa4f9799dec6c, type: 3}
       volume: 5
-      pitch: 1
+      pitch: 0.1
       stereoPan: 0
     waitTime: 0
     pulseSpeed: 7
@@ -2208,7 +2208,7 @@ MonoBehaviour:
   - clips:
     - clip: {fileID: 8300000, guid: 8dac4432aabaf1a4ca6f90f3b85c1f70, type: 3}
       volume: 5
-      pitch: 1
+      pitch: 0.1
       stereoPan: 0
     waitTime: 0
     pulseSpeed: 9
@@ -2217,7 +2217,7 @@ MonoBehaviour:
   - clips:
     - clip: {fileID: 8300000, guid: 2b332f1d6a4ade442bcb33e24e1320d7, type: 3}
       volume: 5
-      pitch: 1
+      pitch: 0.1
       stereoPan: 0
     waitTime: 0
     pulseSpeed: 11
@@ -2227,7 +2227,7 @@ MonoBehaviour:
     clips:
     - clip: {fileID: 8300000, guid: a00765466c94e5643a110f4df42e62dc, type: 3}
       volume: 5
-      pitch: 1
+      pitch: 0
       stereoPan: 0
     waitTime: 0
     pulseSpeed: 16
@@ -2237,19 +2237,19 @@ MonoBehaviour:
     clips:
     - clip: {fileID: 8300000, guid: 84bd2b69a1654b3478497d251390a62f, type: 3}
       volume: 0
-      pitch: 1
+      pitch: 0
       stereoPan: 0
     - clip: {fileID: 8300000, guid: a6ca9d86d62723e4bab17a65ddbd0014, type: 3}
       volume: 1
-      pitch: 1
+      pitch: 0
       stereoPan: 0
     - clip: {fileID: 8300000, guid: a6ca9d86d62723e4bab17a65ddbd0014, type: 3}
       volume: 0.5
-      pitch: 0.568
+      pitch: -1.81
       stereoPan: 1
     - clip: {fileID: 8300000, guid: a6ca9d86d62723e4bab17a65ddbd0014, type: 3}
       volume: 0.5
-      pitch: 1.59
+      pitch: 1.81
       stereoPan: -1
     waitTime: 0
     pulseSpeed: 0

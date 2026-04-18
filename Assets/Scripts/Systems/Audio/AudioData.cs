@@ -15,9 +15,28 @@ namespace finished3
         [Range(-1f, 1f)] public float stereoPan;
 
         /// <summary>
-        /// Phát biến thể âm thanh này. Hỗ trợ hệ số nhân âm lượng và chế độ lặp.
-        /// Trả về Sound ID để có thể quản lý sau này (dừng nhạc, thay đổi âm lượng động).
+        /// Phát biến thể âm thanh này dưới dạng Nhạc nền (BGM) thông qua kênh Music.
+        /// Sử dụng cho các bản nhạc dài, nhạc nền scene.
         /// </summary>
+        public int PlayMusic(float volumeMultiplier = 1f, bool loop = true)
+        {
+            if (clip == null) return -1;
+
+            float finalVol = (volume > 0 ? volume : 1f) * volumeMultiplier;
+
+            // Phát nhạc nền thông qua kênh Music chuyên dụng
+            int id = Hellmade.Sound.EazySoundManager.PlayMusic(clip, finalVol, loop, false);
+            var audio = Hellmade.Sound.EazySoundManager.GetAudio(id);
+
+            if (audio != null)
+            {
+                audio.Pitch = pitch > 0 ? pitch : 1f;
+                audio.StereoPan = stereoPan;
+            }
+
+            return id;
+        }
+
         public int Play(float volumeMultiplier = 1f, bool loop = false)
         {
             if (clip == null) return -1;
@@ -53,13 +72,24 @@ namespace finished3
         /// <summary>
         /// Bốc ngẫu nhiên một biến thể và phát nó.
         /// </summary>
-        public void PlayRandom(float volumeMultiplier = 1f)
+        public void PlayRandom(float volumeMultiplier = 1f, bool loop = false)
         {
             if (audioVariants == null || audioVariants.Length == 0) return;
 
             // Bốc ngẫu nhiên 1 biến thể
             int randomIndex = UnityEngine.Random.Range(0, audioVariants.Length);
-            audioVariants[randomIndex].Play(volumeMultiplier);
+            audioVariants[randomIndex].Play(volumeMultiplier, loop);
+        }
+        /// <summary>
+        /// Bốc ngẫu nhiên một biến thể và phát nó như Nhạc nền (BGM).
+        /// </summary>
+        public void PlayRandomMusic(float volumeMultiplier = 1f)
+        {
+            if (audioVariants == null || audioVariants.Length == 0) return;
+
+            // Bốc ngẫu nhiên 1 biến thể
+            int randomIndex = UnityEngine.Random.Range(0, audioVariants.Length);
+            audioVariants[randomIndex].PlayMusic(volumeMultiplier);
         }
     }
 }
