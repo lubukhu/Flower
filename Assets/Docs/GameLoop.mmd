@@ -1,0 +1,26 @@
+graph TD
+    A[Bắt đầu Game] --> B[Chọn lớp nhân vật<br/>Class: Guardian/Scout/Scholar]
+    B --> C[Bắt đầu kịch bản/Dẫn truyện]
+    C --> D[Khám phá tầng ngục đầu tiên]
+    
+    D --> E{Nhận mục tiêu tầng}
+    
+    E --> F[Khám phá: Lật mở ô gạch]
+    E --> G[Chiến đấu: Tránh/Tiêu diệt Quái]
+    E --> H[Giải đố: Suy luận số gợi ý]
+    
+    F --> I{Kết quả hành động}
+    G --> I
+    H --> I
+    
+    I -- Thất bại: HP = 0 --> J[Bị kết liễu / Game Over]
+    J --> K[Reset nhiệm vụ / Quay về tầng 1]
+    K --> E
+    
+    I -- Hoàn thành: Tìm thấy Cầu thang --> L[Nhận thưởng: Vàng/EXP/Trang bị]
+    L --> M[Nâng cấp nhân vật / Buff chỉ số]
+    M --> N{Còn tầng ngục?}
+    
+    N -- Có --> E
+    N -- Hết tầng --> O[Đánh bại Boss cuối]
+    O --> P[Kết thúc hành trình / Chiến thắng]

@@ -13,6 +13,9 @@ GameObject:
   - component: {fileID: -2777387625146525467}
   - component: {fileID: 4167353531197984020}
   - component: {fileID: -6026532292361862257}
+  - component: {fileID: 2522999447274725910}
+  - component: {fileID: 7690271229048120078}
+  - component: {fileID: -4403878632665265160}
   m_Layer: 0
   m_Name: Characters_2
   m_TagString: Enemy
@@ -137,3 +140,50 @@ MonoBehaviour:
   shakeAmount: 0.05
   squashAmount: 0.1
   flashColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &2522999447274725910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2111897906042077629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1c764cddc97df748a9b95834cb42523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Flower.Core::finished3.AttackMover
+  attackDuration: 0.2
+  stopDistance: 0.2
+  tiltAmount: 20
+--- !u!114 &7690271229048120078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2111897906042077629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e64b8f24cf4da04283a02425378f7dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Flower.Core::finished3.ClimbMover
+  climbDuration: 0.3
+  stepHeightAmount: 0.5
+  startDelayThreshold: 0.1
+--- !u!114 &-4403878632665265160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2111897906042077629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d2774b9aadc12c4db4956849ef496c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Flower.Core::finished3.JumpMover
+  jumpHeight: 0.3
+  sideOffsetAmount: 0.1
+  jumpDuration: 0.25
+  rotationAmount: 15
+  tiltChance: 0.7

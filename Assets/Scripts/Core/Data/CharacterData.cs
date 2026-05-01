@@ -13,6 +13,12 @@ namespace finished3
         [Tooltip("Lượng máu gốc tối đa")]
         public int maxHP = 10;
         
+        [Tooltip("Lượt đi (Steps) giới hạn để khám phá hầm ngục")]
+        public int maxSteps = 30;
+
+        [Tooltip("Năng lượng ma thuật (Mana) để dùng skill")]
+        public int maxMana = 10;
+
         [Tooltip("Sát thương cơ bản")]
         public int attack = 3;
         

@@ -13,7 +13,19 @@ MonoBehaviour:
   m_Name: Enemy_test_1000HP
   m_EditorClassIdentifier: Flower.Core::finished3.CharacterData
   maxHP: 1000
-  attack: 3
+  maxSteps: 30
+  maxMana: 10
+  attack: 1
   defense: 1
-  moveRange: 3
+  moveRange: 1
   attackRange: 1
+  moveAudio:
+    audioVariants: []
+  attackAudio:
+    audioVariants: []
+  hurtAudio:
+    audioVariants: []
+  deathAudio:
+    audioVariants: []
+  cannotMoveAudio:
+    audioVariants: []

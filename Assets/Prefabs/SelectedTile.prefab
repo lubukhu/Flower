@@ -254,6 +254,7 @@ MonoBehaviour:
   Previous: {fileID: 0}
   gridLocation: {x: 0, y: 0, z: 0}
   unitOnTile: {fileID: 0}
+  chestOnTile: {fileID: 0}
   arrows:
   - {fileID: -1033766676993296678, guid: 61cca9f2aed1edc438fec21aee27a1d7, type: 3}
   - {fileID: 7762582236204482122, guid: 61cca9f2aed1edc438fec21aee27a1d7, type: 3}
@@ -268,4 +269,18 @@ MonoBehaviour:
   - {fileID: 5287939958834139383, guid: 61cca9f2aed1edc438fec21aee27a1d7, type: 3}
   - {fileID: 3318904089994504119, guid: 61cca9f2aed1edc438fec21aee27a1d7, type: 3}
   - {fileID: -1033766676993296678, guid: 61cca9f2aed1edc438fec21aee27a1d7, type: 3}
-  isShowing: 0
+  baseTilemap: {fileID: 0}
+  originalTileBase: {fileID: 0}
+  isRevealed: 0
+  isFlagged: 0
+  isMonster: 1
+  isChest: 0
+  isStair: 1
+  stairTileBase: {fileID: 11400000, guid: d8c2f2e8f16d5594bbfd1e5cc7344ec1, type: 2}
+  stairSprite: {fileID: 0}
+  fogColor: {r: 0, g: 0, b: 0, a: 1}
+  numberedColor: {r: 0, g: 0.3207547, b: 0.0947633, a: 0.72156864}
+  emptyColor: {r: 1, g: 1, b: 1, a: 0}
+  neighborMonsterCount: 0
+  neighborChestCount: 0
+  neighborStairCount: 0

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d519ef8aac7e22242ac18d10376472f7, type: 3}
+  m_Name: HP
+  m_EditorClassIdentifier: Flower.Core::finished3.ConsumableData
+  id: pot_hp_01
+  itemName: "B\xECnh M\xE1u Nh\u1ECF"
+  description: "H\u1ED3i ph\u1EE5c 1 Tr\xE1i Tim ngay l\u1EADp t\u1EE9c"
+  icon: {fileID: -8976777344085357281, guid: 2ae960f7470fbd448a6b78826c0b90b2, type: 3}
+  itemType: 0
+  maxStack: 10
+  isDroppable: 1
+  healHP: 2
+  healMP: 0

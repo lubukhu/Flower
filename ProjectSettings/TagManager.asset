@@ -48,5 +48,8 @@ TagManager:
   - name: Logo
     uniqueID: 1058425235
     locked: 0
+  - name: item
+    uniqueID: 2788080301
+    locked: 0
   m_RenderingLayers:
   - Default

@@ -14,6 +14,10 @@ namespace finished3
         public float speed;
         #endregion
 
+        #region Events
+        public static event System.Action<OverlayTile> OnTileHovered;
+        #endregion
+
         #region Internal State
         private static RaycastHit2D[] _hitsBuffer = new RaycastHit2D[50];
         #endregion
@@ -58,13 +62,21 @@ namespace finished3
                 return;
             }
 
-            // 4. Hover Tile (Xử lý đường mũi tên, báo màu tầm nhìn bên Game Logic)
-            PlayerController.Instance.HoverTile(tile);
+            // 4. Hover Tile: Bắn Event cho UI xử lý (HoverTooltipUI sẽ lắng nghe Event này)
+            OnTileHovered?.Invoke(tile);
+            PlayerController.Instance.HoverTile(tile); // Vẫn gọi cho logic (nếu cần vẽ outline)
 
-            // 5. Chuột Trái Click (Báo hiệu PlayerController nhận Tap)
+            // 5. Chuột Trái Click: Di chuyển / Mở sương mù
             if (Input.GetMouseButtonDown(0))
             {
                 PlayerController.Instance.TapOnTile(tile);
+            }
+
+            // 6. Chuột Phải Click: Cắm cờ
+            if (Input.GetMouseButtonDown(1))
+            {
+                tile.ToggleFlag();
+                GameLogger.Log($"Đã {(tile.isFlagged ? "cắm" : "rút")} cờ tại ô {tile.gridLocation}");
             }
         }
         #endregion

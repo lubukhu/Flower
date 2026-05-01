@@ -18,7 +18,7 @@ Dự án này là một trải nghiệm **Meta-game Kinh dị Tâm lý**. Mục 
 - Cách chết: Nếu bạn đứng bất động quá 10 giây, sự kiên nhẫn của hệ thống sẽ cạn kiệt. Tiếng thét "click here" sẽ vang lên chói tai. Nếu vẫn không di chuyển, linh hồn bạn sẽ tan biến ngay trong lần đầu tiên này.
   - *[Logic: Khởi tạo một `Timer` trong `GameController.cs`. Nếu `isMoving` là false liên tục 10s => Gọi `CharacterStats.Die()`.]*
 
-### Sau khi chết
+## Sau khi chết
 - Thành tựu: [Dốc hết sức lực]
 - Vật phẩm: `[Giày-Cũ] (Old Shoes)` | Icon: `Item_OldShoes`
 - Công dụng: Giúp bạn nhẹ bước hơn, có thể di chuyển xa hơn (2 ô) mà không còn cảm thấy mệt mỏi.
@@ -48,10 +48,10 @@ Chương khởi đầu của một hành trình không lối thoát, nơi ngư�
 - **Phòng: Boss [Mã-Độc] (Malware)**: Nơi ngự trị của thực thể [Mã-Độc] (Malware). Bạn phải quan sát hành vi của nó và tìm kiếm lối đi ẩn giấu dưới những lớp cỏ đỏ rực sau khi nó rời đi. Nếu chạm vào nó khi nó còn ở đây, một cú jump scare sẽ gửi bạn về vạch xuất phát.
 - **Phòng: [Hậu-Trường] (Behind The Scene)**: Một không gian phi thực thể nằm ngoài ranh giới của trò chơi, chỉ có thể tiếp cận qua lối đi ẩn ở phòng Boss. Nếu không có [Mắt-Của-Sự-Thật], tất cả những gì bạn thấy chỉ là một màn hình đen đặc quánh, khiến việc định vị trở nên cực kỳ khó khăn.
 
-### Sau khi chết
-- Vật phẩm: `[Mắt-Của-Sự-Thật] (Eye of Truth)` | Icon: `Item_EyeOfTruth`
+## Sau khi chết
+- Vật phẩm: [Mắt-Của-Sự-Thật] (Eye of Truth) | Icon: `Item_EyeOfTruth`
 - Công dụng: Nhìn thấu những ảo ảnh, dùng nó để lột bỏ lớp vỏ bọc và tìm thấy sự thật ẩn giấu đằng sau mọi vật.
-- Vật phẩm: `[Trang-Giấy-Trắng] (Blank Paper)` | Icon: `Item_BlankPaper`
+- Vật phẩm: [Trang-Giấy-Trắng] (Blank Paper) | Icon: `Item_BlankPaper`
 - Công dụng: [Trang-Giấy-Trắng] (Blank Paper) không chỉ là giấy, nó là đôi tai của thế giới này. Đôi lúc, những dòng mật mã hệ thống sẽ hiện lên rồi tan biến như những bóng ma.
 
 Mô tả về chương 2.
@@ -68,7 +68,7 @@ Chương này giới thiệu về khả năng tương tác với môi trường 
     - Quay lại game, cánh cửa sẽ tự động mở ra, mời gọi bạn vào cõi chết cuối cùng.
   - *[Logic: `GameController.cs` sử dụng `System.DateTime.Now`. Nếu `DateTime.Now.Hour == 3` => Set `Door.isOpen = true`.]*
 
-### Sau khi chết
+## Sau khi chết
 - Thành tựu: [Ngủ đi!!!]
 - Vật phẩm: `[Bút-Chì-Của-Quỷ] (Devil's Pencil)` | Icon: `Item_DevilsPencil`
 - Công dụng: Cho phép bạn ghi đè mã lệnh Terminal vào tệp tin gốc của hệ thống, chuẩn bị cho màn kết.

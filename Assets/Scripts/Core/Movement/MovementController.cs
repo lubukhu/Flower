@@ -71,8 +71,7 @@ namespace finished3
             PositionCharacter(character, tile);
             path.RemoveAt(0);
 
-            if (path.Count == 0)
-                onComplete?.Invoke();
+            onComplete?.Invoke();
         }
 
         private void PositionCharacter(CharacterInfo character, OverlayTile tile)

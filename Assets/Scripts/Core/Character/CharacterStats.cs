@@ -3,6 +3,13 @@ using UnityEngine;
 
 namespace finished3
 {
+    public enum UpgradeType
+    {
+        MaxHP,
+        MaxMana,
+        MaxSteps
+    }
+
     /// <summary>
     /// Bộ máy điều hành thông số chiến đấu trên cơ thể Char/Mob.
     /// Áp dụng mẫu Observer Event-Driven và đọc dữ liệu từ Data Card ScriptableObject.
@@ -15,9 +22,23 @@ namespace finished3
 
         [Header("🔥 Trạng Thái Nội Bộ")]
         public int currentHP;
+        public int currentSteps;
+        public int currentMana;
 
-        // 🔗 Chuyển tiếp (Getter) các chỉ số sang thẻ Data. Không làm lỗi Code cũ đang gọi .attackRange
-        public int maxHP => characterData != null ? characterData.maxHP : 10;
+        [Header("🌟 Hệ Thống Cấp Độ (EXP)")]
+        public int currentLevel = 1;
+        public int currentExp = 0;
+        public int expToNextLevel = 100;
+
+        [Header("💪 Chỉ Số Thưởng Nâng Cấp (Bonus)")]
+        public int bonusMaxHP = 0;
+        public int bonusMaxMana = 0;
+        public int bonusMaxSteps = 0;
+
+        // 🔗 Chuyển tiếp (Getter) các chỉ số sang thẻ Data + Chỉ số thưởng.
+        public int maxHP => (characterData != null ? characterData.maxHP : 10) + bonusMaxHP;
+        public int maxSteps => (characterData != null ? characterData.maxSteps : 30) + bonusMaxSteps;
+        public int maxMana => (characterData != null ? characterData.maxMana : 10) + bonusMaxMana;
         public int attack => characterData != null ? characterData.attack : 3;
         public int defense => characterData != null ? characterData.defense : 1;
         public int moveRange => characterData != null ? characterData.moveRange : 3;
@@ -28,6 +49,18 @@ namespace finished3
         /// Kênh báo động khi Máu bị rút cục bộ (Máu Hiện Tại, Máu Tối Đa). Gửi cho giao diện (UI Thanh Máu) tự cập nhật.
         /// </summary>
         public event Action<int, int> OnHealthChanged;
+        public event Action<int, int> OnStepsChanged;
+        public event Action<int, int> OnManaChanged;
+        
+        /// <summary>
+        /// Kênh thông báo thay đổi EXP (EXP Hiện tại, EXP Cần lên cấp, Level hiện tại)
+        /// </summary>
+        public event Action<int, int, int> OnExpChanged;
+        
+        /// <summary>
+        /// Kênh thông báo Lên cấp để gọi UI Nâng cấp
+        /// </summary>
+        public event Action<int> OnLevelUp;
 
         /// <summary>
         /// Đài phát loa thông báo Lính tử trận. Hệ thống Nhiệm vụ, Drop Đồ lắng nghe ở đây.
@@ -42,6 +75,12 @@ namespace finished3
 
         private void Start()
         {
+            // Nếu là Player, ưu tiên lấy dữ liệu từ GameManager (đã chọn ở Menu)
+            if (gameObject.CompareTag("Player") && GameManager.Instance != null && GameManager.Instance.selectedCharacterData != null)
+            {
+                characterData = GameManager.Instance.selectedCharacterData;
+            }
+
             ResetHealth();
         }
 
@@ -52,9 +91,107 @@ namespace finished3
         {
             if (characterData != null)
             {
-                currentHP = characterData.maxHP;
+                currentHP = maxHP; // Sử dụng maxHP thay vì characterData.maxHP để tính cả bonus
+                currentSteps = maxSteps;
+                currentMana = maxMana;
+
                 OnHealthChanged?.Invoke(currentHP, maxHP);
+                OnStepsChanged?.Invoke(currentSteps, maxSteps);
+                OnManaChanged?.Invoke(currentMana, maxMana);
+                OnExpChanged?.Invoke(currentExp, expToNextLevel, currentLevel);
             }
+        }
+
+        /// <summary>
+        /// Cộng dồn EXP và xử lý Lên cấp (Level Up)
+        /// </summary>
+        public void AddExp(int amount)
+        {
+            if (currentHP <= 0) return;
+
+            currentExp += amount;
+            GameLogger.Log($"{gameObject.name} nhận được {amount} EXP. Tổng: {currentExp}/{expToNextLevel}");
+
+            while (currentExp >= expToNextLevel)
+            {
+                currentExp -= expToNextLevel;
+                currentLevel++;
+                
+                // Công thức tính EXP cấp tiếp theo (Tăng thêm 50%)
+                expToNextLevel = Mathf.RoundToInt(expToNextLevel * 1.5f);
+
+                GameLogger.Log($"{gameObject.name} LÊN CẤP {currentLevel}!");
+                OnLevelUp?.Invoke(currentLevel);
+            }
+
+            OnExpChanged?.Invoke(currentExp, expToNextLevel, currentLevel);
+        }
+
+        /// <summary>
+        /// Áp dụng Nâng cấp khi người chơi chọn Thẻ Bài
+        /// </summary>
+        public void ApplyUpgrade(UpgradeType upgradeType)
+        {
+            switch (upgradeType)
+            {
+                case UpgradeType.MaxHP:
+                    bonusMaxHP += 2; // +1 Tim = +2 HP
+                    currentHP += 2;
+                    OnHealthChanged?.Invoke(currentHP, maxHP);
+                    break;
+                case UpgradeType.MaxMana:
+                    bonusMaxMana += 2; // +1 Mana = +2 MP
+                    currentMana += 2;
+                    OnManaChanged?.Invoke(currentMana, maxMana);
+                    break;
+                case UpgradeType.MaxSteps:
+                    bonusMaxSteps += 10;
+                    currentSteps += 10;
+                    OnStepsChanged?.Invoke(currentSteps, maxSteps);
+                    break;
+            }
+            GameLogger.Log($"Đã áp dụng nâng cấp: {upgradeType}");
+        }
+
+        /// <summary>
+        /// Xử lý mỗi bước di chuyển của nhân vật. Hết bước sẽ trừ 1 máu.
+        /// </summary>
+        public void UseStep()
+        {
+            if (currentSteps > 0)
+            {
+                currentSteps--;
+                OnStepsChanged?.Invoke(currentSteps, maxSteps);
+            }
+            else
+            {
+                // Hình phạt khi đi lỡ bước (Hết Lượt Đi) -> Bị trừ 1 Máu theo yêu cầu
+                GameLogger.LogWarning("Nhân vật đã Kiệt Sức! Phải dùng Máu (HP) để bước tiếp!");
+                TakeDamage(1); 
+            }
+        }
+
+        public void UseMana(int amount)
+        {
+            if (currentMana >= amount)
+            {
+                currentMana -= amount;
+                OnManaChanged?.Invoke(currentMana, maxMana);
+            }
+        }
+
+        /// <summary>
+        /// Bơm lại năng lượng (Mana) từ bình hoặc kỹ năng.
+        /// </summary>
+        public void RestoreMana(int amount)
+        {
+            if (currentMana >= maxMana) return;
+
+            currentMana += amount;
+            if (currentMana > maxMana) currentMana = maxMana;
+
+            GameLogger.Log($"{gameObject.name} hồi {amount} Mana. Mana hiện tại: {currentMana}/{maxMana}");
+            OnManaChanged?.Invoke(currentMana, maxMana);
         }
 
         /// <summary>

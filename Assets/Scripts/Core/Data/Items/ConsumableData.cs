@@ -38,8 +38,12 @@ namespace finished3
                 if (healed) itemConsumed = true;
             }
 
-            // Tiêm MP (Thiết kế phòng hờ Tương Lai)
-            // if (healMP > 0) { target.RestoreMana(healMP); itemConsumed = true; }
+            // Tiêm MP
+            if (healMP > 0) 
+            { 
+                target.RestoreMana(healMP); 
+                itemConsumed = true; 
+            }
 
             // Thêm các thuật toán Buff Sát thương, Buff Giáp ở khúc này sau...
 

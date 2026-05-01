@@ -13,33 +13,37 @@ MonoBehaviour:
   m_Name: RetroRed 1
   m_EditorClassIdentifier: 
   data:
-    pixelationAmount: 5
+    pixelationAmount: 0
     maxColorChannels:
-      red: 50
-      green: 59
-      blue: 58
-      greyScale: 0.263
-    dithering4: 0.089
-    dithering8: 0.03
-    vignette: 0.299
-    innerCurve: 4.28
-    monitorCurve: 0.056
+      red: 48
+      green: 61
+      blue: 60
+      greyScale: 0.174
+    dithering4: 0.019
+    dithering8: 0.074
+    vignette: 0.237
+    innerCurve: 3.58
+    monitorCurve: 0.031
     monitorInnerSize:
       width: 0
       height: 0
     monitorOutterSize:
-      width: 0.079
-      height: 0.094
-    zoom: 1.125
+      width: 0.052
+      height: 0.071
+    zoom: 1.144
     monitorRoundness: 0.2
     monitorTexture: {fileID: 2800000, guid: a5e897f9f29eb488ba4791cd52d004b5, type: 3}
     monitorColor: {r: 0, g: 0, b: 0, a: 0.34117648}
-    innerMonitorDarkness: 0.457
-    innerMonitorShine: 0.089
+    innerMonitorDarkness: 0.337
+    innerMonitorShine: 0.119
     colorScans:
-      greenChannelMultiplier: -0.237
-      redBlueChannelMultiplier: -0.174
-      sizeMultiplier: 0.4
+      greenChannelMultiplier: -0.288
+      redBlueChannelMultiplier: -0.281
+      sizeMultiplier: 1.33
     innerMonitorShineRadius: -0.087
     innerMonitorShineCurve: 10
-  validationId: f72c692a-242d-461a-8b71-22260dc408ba
+    brightness: 1
+    contrast: 1
+    saturation: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  validationId: 37236fe4-5c92-442b-bb84-b2a0747f4ceb

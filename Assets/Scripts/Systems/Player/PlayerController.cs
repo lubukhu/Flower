@@ -1,20 +1,26 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static finished3.ArrowTranslator;
 
 namespace finished3
 {
     /// <summary>
-    /// PlayerController quản lý trạng thái, Spawn, Di Chuyển và Tấn Công của người chơi.
-    /// Nhận tọa độ từ MouseController. Chuẩn mô hình Single Responsibility.
+    /// PlayerController quản lý trạng thái, Spawn và Di Chuyển của Seeker.
+    /// Chuẩn mô hình Single Responsibility.
     /// </summary>
     public class PlayerController : MonoBehaviour
     {
         public static PlayerController Instance { get; private set; }
 
+        #region Events
+        // Event bắn ra khi người chơi hoàn thành 1 bước đi (Truyền OverlayTile đích đến)
+        // MainHUD sẽ đăng ký Event này để cập nhật UI góc dưới bên trái
+        public static event Action<OverlayTile> OnPlayerStep;
+        #endregion
+
         #region Inspector Settings
         [Header("Spawn Settings")]
-        [Tooltip("Prefab nhân vật sẽ được sinh ra (Kéo thả từ bên ngoài Scene)")]
+        [Tooltip("Prefab nhân vật sẽ được sinh ra")]
         public GameObject characterPrefab;
         #endregion
 
@@ -23,32 +29,22 @@ namespace finished3
         private CharacterStats playerStats;
         private JumpMover jumpMover;
         private ClimbMover climbMover;
-        
-        private List<OverlayTile> rangeFinderTiles = new List<OverlayTile>();
-        private List<OverlayTile> attackTiles = new List<OverlayTile>();
-        private List<OverlayTile> path = new List<OverlayTile>();
         #endregion
 
         #region Internal State
         private bool isMoving;
-        private bool isRangeVisible = true;
+        public bool isLevelingUp = false; // Biến chặn người chơi khi bảng Level Up hiện lên
         public bool IsPlayerSpawned => character != null;
-        #endregion
 
-        #region Systems
         private MovementController movementController;
-        private AttackController attackController;
-        private RangeSystem rangeSystem;
-        private TileHighlighter tileHighlighter;
-        private ArrowTranslator arrowTranslator;
         private MovementSystem movementSystem;
+        private List<OverlayTile> currentPath = new List<OverlayTile>();
         #endregion
 
         #region Unity Callbacks
         private void Awake()
         {
-            // Báo động đỏ nếu Quên kéo thẻ Prefab vào Inspector!
-            UnityEngine.Assertions.Assert.IsNotNull(characterPrefab, "FATAL ERROR: Bạn chưa kéo `characterPrefab` vào PlayerController ở màn hình scene!");
+            UnityEngine.Assertions.Assert.IsNotNull(characterPrefab, "FATAL ERROR: Cần gán characterPrefab!");
 
             if (Instance != null && Instance != this)
             {
@@ -60,167 +56,339 @@ namespace finished3
 
         private void Start()
         {
-            movementController = new MovementController();
-            attackController = new AttackController();
-            rangeSystem = new RangeSystem();
-            movementSystem = new MovementSystem();
-            tileHighlighter = new TileHighlighter();
-            arrowTranslator = new ArrowTranslator();
-
             isMoving = false;
-        }
-
-        private void Update()
-        {
-            // Thực thi quỹ đạo di chuyển
-            if (path.Count > 0 && isMoving && isRangeVisible)
-            {
-                movementController.MoveAlongPath(
-                    character,
-                    jumpMover,
-                    climbMover,        
-                    movementSystem,    
-                    path,
-                    () =>
-                    {
-                        GetInRangeTiles();
-                        isMoving = false;
-                        
-                        // ✨ [CHAPTER 1 HOOK] Thông báo đã hoàn thành 1 bước đi
-                        if (Chapter1Controller.Instance != null)
-                        {
-                            Chapter1Controller.Instance.OnPlayerMove();
-                        }
-                    }
-                );
-            }
+            movementController = new MovementController();
+            movementSystem = new MovementSystem();
         }
         #endregion
 
         #region Public API (Được gọi từ MouseController)
-        /// <summary>
-        /// Xử lý click trái lên một Tile bất kỳ.
-        /// </summary>
         public void TapOnTile(OverlayTile tile)
         {
-            // ✨ [CHAPTER 1 HOOK] Kiểm tra xem ô gạch này có được phép Tap không (ví dụ: chỉ cho phép ô (2,2) ở đầu game)
-            if (Chapter1Controller.Instance != null && !Chapter1Controller.Instance.CanTapTile(tile)) return;
+            if (isMoving || isLevelingUp) return; // Chặn input nếu đang di chuyển hoặc đang Lên cấp
 
-            if (HandleAttack(tile)) return;
-            if (HandleSpawn(tile)) return;
-            if (HandleMovement(tile)) return;
+            // Spawn nhân vật nếu chưa có
+            if (!IsPlayerSpawned)
+            {
+                HandleSpawn(tile);
+                return;
+            }
+            // Nếu có đường đi hợp lệ đến ô này (dù là ô đã lật hay chưa lật)
+            if (currentPath != null && currentPath.Count > 0)
+            {
+                isMoving = true;
+                MovePathStep();
+                return;
+            }
+
+            // Fallback: Nếu không có đường (hoặc click linh tinh nhưng sát bên cạnh)
+            HandleMovement(tile);
         }
 
-        /// <summary>
-        /// Dọn dẹp/Ẩn toàn bộ hiệu ứng Overlay khi nhấp chuột ra ngoài hay hủy lệnh.
-        /// </summary>
+        // ---- BACKWARD COMPATIBILITY CHO CODE CŨ ----
         public void CancelAction()
         {
-            ClearArrows();
-            HideRange();
-            isRangeVisible = false;
-            path.Clear();
-            isMoving = false;
+            // Dummy method để các script cũ không báo lỗi.
         }
+        // --------------------------------------------
 
-        /// <summary>
-        /// Xử lý hiển thị đường đi (Path Preview) khi Hover chuột qua Tile.
-        /// </summary>
         public void HoverTile(OverlayTile tile)
         {
-            if (isRangeVisible && rangeFinderTiles.Contains(tile) && !isMoving)
+            if (isMoving || !IsPlayerSpawned) return;
+
+            // Xóa đường mũi tên cũ
+            if (currentPath != null && currentPath.Count > 0)
             {
-                path = movementController.GetPath(character, tile, rangeFinderTiles);
-                tileHighlighter.ClearArrows(rangeFinderTiles);
-                tileHighlighter.ShowPath(path, arrowTranslator, character.standingOnTile);
+                foreach (var item in currentPath)
+                {
+                    item.SetSprite(ArrowTranslator.ArrowDirection.None);
+                }
+                currentPath.Clear();
             }
-            else
+
+            // Nếu cắm cờ hoặc trỏ vào chính mình thì bỏ qua
+            if (tile.isFlagged) return;
+            if (tile == character.standingOnTile) return;
+
+            // Lấy danh sách toàn bộ các ô an toàn (đã lật, không cờ) để làm bản đồ tìm đường
+            List<OverlayTile> safeTiles = new List<OverlayTile>();
+            foreach (var kvp in MapManager.Instance.map)
             {
-                ClearArrows();
+                if (kvp.Value.isRevealed && !kvp.Value.isFlagged)
+                {
+                    safeTiles.Add(kvp.Value);
+                }
+            }
+
+            // Nếu ô đang trỏ CHƯA LẬT, chúng ta vẫn cho phép thuật toán tìm đường tới nó
+            // bằng cách thêm tạm thời nó vào danh sách an toàn
+            if (!tile.isRevealed)
+            {
+                safeTiles.Add(tile);
+            }
+
+            // Tìm đường đi ngắn nhất
+            currentPath = movementController.GetPath(character, tile, safeTiles);
+
+            // Vẽ mũi tên dọc theo đường đi
+            if (currentPath.Count > 0)
+            {
+                for (int i = 0; i < currentPath.Count; i++)
+                {
+                    var previousTile = i > 0 ? currentPath[i - 1] : character.standingOnTile;
+                    var futureTile = i < currentPath.Count - 1 ? currentPath[i + 1] : null;
+
+                    var arrow = new ArrowTranslator().TranslateDirection(previousTile, currentPath[i], futureTile);
+                    currentPath[i].SetSprite(arrow);
+                }
             }
         }
         #endregion
 
         #region Core Gameplay Logic
-        private bool HandleAttack(OverlayTile tile)
+        private void HandleMovement(OverlayTile targetTile)
         {
-            if (character == null) return false;
-
-            if (tile.unitOnTile != null && tile.unitOnTile != character)
+            // Nếu đang đứng trên cầu thang và click lại chính nó -> Vẫn cho hiện bảng xác nhận
+            if (targetTile == character.standingOnTile)
             {
-                if (attackTiles.Contains(tile))
+                if (targetTile.isStair && targetTile.isRevealed)
                 {
-                    attackController.TryAttack(tile, playerStats, () => 
-                    {
-                        // Callback chạy SAU KHI đòn đánh đã tính toán (Enemy mất máu hoặc chết vỡ tung)
-                        HideRange();
-                        ClearArrows();
-                        GetInRangeTiles(); // Quét gạch lại từ đầu: Quái sống = Ô đỏ, Quái chết gỡ Tile = Ô trắng walkable
-                        isRangeVisible = true;
-                    });
-                    
-                    // Xóa CancelAction() ở đây để màn hình không bị tối mù đột ngột khi nhân vật đang múa đòn
-                    return true;
+                    ShowStairPopup();
                 }
-                return true;
+                return;
             }
-            return false;
-        }
 
-        private bool HandleMovement(OverlayTile tile)
-        {
-            if (!isRangeVisible)
+            // Kiểm tra xem có kề cạnh không (Chỉ cho phép đi 1 bước: Trên, dưới, trái, phải)
+            // Không cho đi chéo để sát với thiết kế Dò mìn trên Isometric
+            int xDiff = Mathf.Abs(targetTile.gridLocation.x - character.standingOnTile.gridLocation.x);
+            int yDiff = Mathf.Abs(targetTile.gridLocation.y - character.standingOnTile.gridLocation.y);
+            
+            if (xDiff + yDiff > 1) 
             {
-                if (tile == character.standingOnTile)
+                GameLogger.Log("Chỉ được đi từng bước kề cạnh!");
+                isMoving = false; // Đảm bảo mở khóa UI
+                return;
+            }
+
+            // Kiểm tra bị cắm cờ không
+            if (targetTile.isFlagged)
+            {
+                GameLogger.Log("Ô này đã bị cắm cờ, không thể bước lên!");
+                isMoving = false; // Đảm bảo mở khóa UI
+                return;
+            }
+
+            // Kiểm tra xem ô đích có rương không (đã lộ diện)
+            if (targetTile.chestOnTile != null && !targetTile.chestOnTile.isOpen)
+            {
+                // Mở rương từ xa
+                targetTile.chestOnTile.OpenChest();
+                isMoving = false;
+                return; // KHÔNG NHẢY VÀO Ô ĐÃ CÓ RƯƠNG
+            }
+
+            // Kiểm tra xem ô đích có phải Cầu Thang (đã lộ diện) không
+            if (targetTile.isStair && targetTile.isRevealed)
+            {
+                ShowStairPopup();
+                isMoving = false;
+                return; // KHÔNG NHẢY VÀO CHỖ CẦU THANG KHI CLICK
+            }
+
+            // Kiểm tra xem ô đích đã có ai đứng chưa (ví dụ: Quái vật đã lộ diện)
+            if (targetTile.unitOnTile != null && targetTile.unitOnTile != character)
+            {
+                // Kích hoạt Combat: Người chơi chủ động tấn công quái vật
+                var enemyStats = targetTile.unitOnTile.GetComponent<CharacterStats>();
+                if (enemyStats != null && CombatManager.Instance != null)
                 {
-                    ShowRange();
-                    isRangeVisible = true;
+                    CombatManager.Instance.Attack(playerStats, enemyStats);
                 }
-                return false;
-            }
-    
-            if (!rangeFinderTiles.Contains(tile))
-            {
-                CancelAction();
-                return true;
-            }
-
-            if (tile == character.standingOnTile)
-            {
-                CancelAction();
-                return true;
-            }
-
-            // ✨ [CHAPTER 1 HOOK] Kiểm tra khóa di chuyển của Bước 3
-            // Thay vì chặn ngay từ đầu, ta cho hiện Range nhưng rung lắc khi định đi
-            if (Chapter1Controller.Instance != null && Chapter1Controller.Instance.IsMovementLocked())
-            {
-                // 🎵 [SFX] Báo không đi được (Random + Pitch/Pan chuyên nghiệp)
-                var stats = character.GetComponent<CharacterStats>();
-                if (stats != null && stats.characterData != null)
-                    stats.characterData.PlayRandomCannotMove();
-
-                var hitEffect = character.GetComponent<HitEffect>();
-                if (hitEffect != null) hitEffect.PlayHit();
                 
-                // Ép hiện lại Range vì nếu không hệ thống Update trong OverlayTile sẽ tự ẩn mất
-                ShowRange();
-
-                GameLogger.Log("Chapter 1: Di chuyển bị chặn. Nhân vật rung lắc báo hiệu.");
-                return true;
+                isMoving = false;
+                return; // KHÔNG NHẢY VÀO Ô ĐÃ CÓ NGƯỜI
             }
-
-            path = movementController.GetPath(character, tile, rangeFinderTiles);
 
             isMoving = true;
-            tile.HideTile();
-            return true;
+
+            bool wasRevealed = targetTile.isRevealed;
+
+            // 1. LẬT Ô TRƯỚC ĐỂ KIỂM TRA (Tránh tình trạng nhảy vào rồi mới biết có mìn)
+            targetTile.RevealTile();
+
+            // Nếu lật trúng Quái Vật -> Sinh quái, Bị đánh, và KHÔNG nhảy vào ô đó
+            if (targetTile.isMonster)
+            {
+                GameLogger.Log("BÙM! Đạp trúng quái vật!");
+                targetTile.isMonster = false; // Quái đã xuất hiện, xóa cờ mìn
+
+                if (EnemySpawner.Instance != null && CombatManager.Instance != null)
+                {
+                    // Sinh quái vật ngay tại vị trí ô vừa lật
+                    var enemyStats = EnemySpawner.Instance.SpawnEnemyAndGet(targetTile.grid2DLocation);
+                    
+                    if (enemyStats != null)
+                    {
+                        // Quái vật cắn người chơi trước
+                        CombatManager.Instance.Attack(enemyStats, playerStats);
+                    }
+                }
+                else
+                {
+                    GameLogger.LogWarning("⚠️ KHÔNG TÌM THẤY EnemySpawner HOẶC CombatManager TRONG SCENE! Hãy kéo Script vào 1 GameObject trống. Tạm thời trừ 3 máu thay vì sinh quái.");
+                    playerStats.TakeDamage(3);
+                }
+
+                // Giữ nguyên vị trí, không nhảy, nhả cờ isMoving
+                OnPlayerStep?.Invoke(character.standingOnTile); 
+                isMoving = false;
+                return;
+            }
+
+            // Nếu lật trúng Rương -> Sinh rương và KHÔNG nhảy vào ô đó
+            if (targetTile.isChest)
+            {
+                GameLogger.Log("Wow! Bạn đã tìm thấy một Rương Báu!");
+                targetTile.isChest = false; // Rương đã xuất hiện, xóa cờ mìn
+
+                // Lật trúng rương an toàn (không có quái), thưởng 10 EXP nếu là lần đầu lật
+                if (!wasRevealed && playerStats != null)
+                {
+                    playerStats.AddExp(10);
+                }
+
+                if (ChestSpawner.Instance != null)
+                {
+                    GameObject chestObj = ChestSpawner.Instance.SpawnChest(targetTile);
+                    if (chestObj != null)
+                    {
+                        Chest chestComp = chestObj.GetComponent<Chest>();
+                        if (chestComp != null) chestComp.OpenChest();
+                    }
+                }
+                else
+                {
+                    GameLogger.LogWarning("⚠️ KHÔNG TÌM THẤY ChestSpawner TRONG SCENE! Hãy kéo Script ChestSpawner vào GameManagers.");
+                }
+
+                // Giữ nguyên vị trí, không nhảy vào ô đó
+                OnPlayerStep?.Invoke(character.standingOnTile); 
+                isMoving = false;
+                return;
+            }
+
+            // Nếu lật trúng Cầu Thang -> Hiện cầu thang và KHÔNG nhảy vào ô đó
+            if (targetTile.isStair)
+            {
+                GameLogger.Log("Cầu thang dẫn xuống tầng sâu hơn đã lộ diện!");
+                
+                // Thưởng 10 EXP cho việc tìm thấy cầu thang
+                if (!wasRevealed && playerStats != null) playerStats.AddExp(10);
+
+                // Hiện bảng hỏi luôn
+                ShowStairPopup();
+
+                OnPlayerStep?.Invoke(character.standingOnTile); 
+                isMoving = false;
+                return;
+            }
+
+            // --- Lật được ô trống an toàn (Không quái, không rương) ---
+            if (!wasRevealed && playerStats != null)
+            {
+                playerStats.AddExp(10);
+            }
+
+            // 2. NẾU Ô AN TOÀN -> THỰC HIỆN BƯỚC NHẢY VÀO Ô ĐÓ
+            // Xử lý SortingOrder ngay lập tức để không bị lỗi đè hình khi đang bay trên không
+            character.GetComponent<SpriteRenderer>().sortingOrder = targetTile.GetComponent<SpriteRenderer>().sortingOrder;
+
+            // Tọa độ đích thực sự cần đáp xuống
+            Vector3 targetLandingPos = new Vector3(
+                targetTile.transform.position.x,
+                targetTile.transform.position.y - 0.0001f,
+                targetTile.transform.position.z + 0.96f
+            );
+
+            // Hàm callback chạy SAU KHI NHẢY XONG
+            System.Action onJumpComplete = () =>
+            {
+                // Cập nhật Logic Grid
+                character.standingOnTile.unitOnTile = null; // Rời ô cũ
+                character.standingOnTile = targetTile;
+                targetTile.unitOnTile = character; // Vào ô mới
+
+                // Trừ Lượt Đi (Steps)
+                if (playerStats != null)
+                {
+                    playerStats.UseStep();
+                }
+
+                // Gọi Event báo cho MainHUD biết mình vừa đổi ô
+                OnPlayerStep?.Invoke(targetTile);
+
+                isMoving = false;
+            };
+
+            // Kích hoạt hoạt ảnh nhảy (Play SFX và gọi Jump)
+            var stats = character.GetComponent<CharacterStats>();
+            if (stats != null && stats.characterData != null) stats.characterData.PlayRandomMove();
+
+            var moveType = movementSystem.GetMovementType(character.standingOnTile, targetTile);
+            if (moveType == MovementType.Climb && climbMover != null)
+            {
+                climbMover.StartClimb(targetLandingPos, onJumpComplete);
+            }
+            else if (jumpMover != null)
+            {
+                jumpMover.StartJump(targetLandingPos, onJumpComplete);
+            }
+            else
+            {
+                // Fallback nếu không có Script JumpMover thì dịch chuyển tức thì
+                character.transform.position = targetLandingPos;
+                onJumpComplete.Invoke();
+            }
         }
 
-        private bool HandleSpawn(OverlayTile tile)
+        private void MovePathStep()
         {
-            if (character != null) return false;
+            if (currentPath.Count > 0)
+            {
+                OverlayTile nextTile = currentPath[0];
 
+                // Nếu ô chuẩn bị bước lên là ô CHƯA MỞ (tức là bước cuối cùng để lật ô)
+                if (!nextTile.isRevealed)
+                {
+                    // Ẩn mũi tên
+                    nextTile.SetSprite(ArrowTranslator.ArrowDirection.None);
+                    currentPath.RemoveAt(0);
+
+                    // Chuyển giao quyền di chuyển bước cuối cho HandleMovement (cơ chế Dò mìn)
+                    HandleMovement(nextTile);
+                    return;
+                }
+
+                // Nếu ô an toàn -> Di chuyển bằng Jump/Walk như cũ
+                nextTile.SetSprite(ArrowTranslator.ArrowDirection.None);
+
+                movementController.MoveAlongPath(character, jumpMover, climbMover, movementSystem, currentPath, () =>
+                {
+                    // Cập nhật UI HUD sau mỗi bước đi
+                    OnPlayerStep?.Invoke(character.standingOnTile);
+                    
+                    // Đi tiếp bước tiếp theo
+                    MovePathStep();
+                });
+            }
+            else
+            {
+                isMoving = false;
+            }
+        }
+
+        private void HandleSpawn(OverlayTile tile)
+        {
             character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
             playerStats = character.GetComponent<CharacterStats>();
             jumpMover = character.GetComponent<JumpMover>();
@@ -232,49 +400,30 @@ namespace finished3
                 tile.transform.position.z + 0.96f
             );
 
-            character.GetComponent<SpriteRenderer>().sortingOrder =
-                tile.GetComponent<SpriteRenderer>().sortingOrder;
-
+            character.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
             character.standingOnTile = tile;
             tile.unitOnTile = character;
 
-            // ✨ [CHAPTER 1 HOOK] Thông báo đã Spawn TRƯỚC khi tính toán tầm di chuyển
-            if (Chapter1Controller.Instance != null)
+            // Xóa vùng an toàn và Rải mìn (Procedural Generation)
+            MapManager.Instance.GenerateDungeon(new Vector2Int(tile.gridLocation.x, tile.gridLocation.y));
+
+            // Lật ô đầu tiên
+            tile.RevealTile();
+            
+            // Cập nhật UI
+            OnPlayerStep?.Invoke(tile);
+        }
+        private void ShowStairPopup()
+        {
+            if (StairConfirmUI.Instance != null)
             {
-                Chapter1Controller.Instance.SetPlayerSpawned(true);
+                StairConfirmUI.Instance.ShowConfirmPanel();
             }
-
-            GetInRangeTiles();
-
-            return true;
-        }
-        #endregion
-
-        #region UI & Helpers
-        private void ClearArrows()
-        {
-            if (rangeFinderTiles == null) return;
-            tileHighlighter.ClearArrows(rangeFinderTiles);
-        }
-
-        private void HideRange()
-        {
-            tileHighlighter.ClearTiles(rangeFinderTiles);
-            tileHighlighter.ClearTiles(attackTiles);
-        }
-
-        private void ShowRange()
-        {
-            tileHighlighter.ShowMoveRange(rangeFinderTiles);
-            tileHighlighter.ShowAttackRange(attackTiles); // 🔧 BUG FIX: Gọi lại vòng Đỏ bị mất hồi nãy
-        }
-
-        private void GetInRangeTiles()
-        {
-            rangeFinderTiles = rangeSystem.GetMoveRange(character, playerStats.moveRange);
-            tileHighlighter.ShowMoveRange(rangeFinderTiles);
-            attackTiles = rangeSystem.GetAttackRange(character, playerStats.attackRange);
-            tileHighlighter.ShowAttackRange(attackTiles);
+            else
+            {
+                GameLogger.LogWarning("Chưa có StairConfirmUI! Tự động chuyển tầng qua DungeonManager.");
+                if (DungeonManager.Instance != null) DungeonManager.Instance.NextFloor();
+            }
         }
         #endregion
     }

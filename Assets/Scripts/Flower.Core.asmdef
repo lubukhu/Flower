@@ -3,7 +3,8 @@
     "rootNamespace": "finished3",
     "references": [
         "BrewedInk.CRT",
-        "Hellmade.Sound"
+        "Hellmade.Sound",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
